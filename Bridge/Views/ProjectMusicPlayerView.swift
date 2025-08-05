@@ -1,4 +1,11 @@
-//// ProjectMusicPlayerView.swift
+//
+// ProjectMusicPlayerView.swift
+// Bridge
+//
+// This file contains the ProjectMusicPlayerView for playing project audio and displaying lyrics.
+// Always loads lyrics from .txt files using Persistence.swift functions.
+// Uses AudioPlayerView.swift for audio playback.
+//
 
 import SwiftUI
 
@@ -46,9 +53,9 @@ struct ProjectMusicPlayerView: View {
                     AudioPlayerView(url: audioURL)
                 }
 
-                if let txtURL = project.files.first(where: {
-                    $0.pathExtension.lowercased() == "txt"
-                }), let lyrics = try? String(contentsOf: txtURL) {
+                // Always load lyrics from file using persistence function
+                let lyrics = loadLyrics(from: project)
+                if !lyrics.isEmpty {
                     ScrollView {
                         Text(lyrics)
                             .padding()
@@ -57,6 +64,7 @@ struct ProjectMusicPlayerView: View {
                     .frame(maxHeight: 200)
                 } else {
                     Text("No lyrics available.")
+                        .foregroundColor(isArtLight ? .black : .white)
                 }
             }
             .padding()

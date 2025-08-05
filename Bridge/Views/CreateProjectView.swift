@@ -1,4 +1,11 @@
-//// CreateProjectView.swift
+//
+// CreateProjectView.swift
+// Bridge
+//
+// This file contains the CreateProjectView for creating new projects.
+// Ensures every project has a lyrics .txt file upon creation.
+// Uses ImagePicker.swift and DocumentPicker.swift for file selection.
+//
 
 import SwiftUI
 
@@ -45,18 +52,12 @@ struct CreateProjectView: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
-                        // create .txt if needed
-                        var updated = selectedFiles
-                        if updated.allSatisfy({ $0.pathExtension.lowercased() != "txt" }) {
-                            if let dir = FileManager.default
-                                .urls(for: .documentDirectory, in: .userDomainMask).first {
-                                let name = "Lyrics_\(UUID().uuidString.prefix(6)).txt"
-                                let url = dir.appendingPathComponent(name)
-                                try? "".write(to: url, atomically: true, encoding: .utf8)
-                                updated.append(url)
-                            }
-                        }
-                        let proj = Project(title: title, artwork: selectedImage, files: updated)
+                        // Create the project first
+                        var proj = Project(title: title, artwork: selectedImage, files: selectedFiles)
+                        
+                        // Ensure the project has a lyrics file
+                        ensureLyricsFile(for: &proj)
+                        
                         onSave(proj)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                             NotificationCenter.default

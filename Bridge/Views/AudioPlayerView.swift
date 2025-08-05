@@ -1,4 +1,10 @@
-//// AudioPlayerView.swift
+//
+// AudioPlayerView.swift
+// Bridge
+//
+// This file contains the AudioPlayerView for playing audio files in projects.
+// Provides play/pause controls and a seek slider for audio playback.
+//
 
 import SwiftUI
 import AVFoundation

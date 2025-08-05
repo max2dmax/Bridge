@@ -1,4 +1,10 @@
-//// UIImage+DominantColor.swift
+//
+// UIImage+DominantColor.swift
+// Bridge
+//
+// This file contains UIImage extension for extracting the dominant/average color from an image.
+// Used for dynamic theming based on project artwork.
+//
 
 import UIKit
 import CoreImage

@@ -1,47 +1,14 @@
+//
+// ContentView.swift
+// Bridge
+//
+// This file contains the main ContentView for the Bridge app.
+// Shows the list of projects with navigation to music player and project details.
+// Uses Persistence.swift for all disk operations and ImagePicker.swift for image selection.
+//
+
 import SwiftUI
 import UIKit
-
-// MARK: - Extracted View Components
-// SplashScreenView moved to SplashScreenView.swift
-// CreateProjectView moved to CreateProjectView.swift
-// ProjectMusicPlayerView moved to ProjectMusicPlayerView.swift
-// ProjectDetailView moved to ProjectDetailView.swift
-// AudioPlayerView moved to AudioPlayerView.swift
-// DocumentPicker moved to DocumentPicker.swift
-// Dominant color utilities moved to ColorUtils.swift
-private let savedProjectsKey = "savedProjects"
-
-func saveProjectsToDisk(_ projects: [Project]) {
-    let encoder = JSONEncoder()
-    if let encoded = try? encoder.encode(projects.map { project in
-        CodableProject(
-            title: project.title,
-            files: project.files.map { $0.path },
-            artworkData: project.artwork?.pngData(),
-            fontName: project.fontName,
-            useBold: project.useBold,
-            useItalic: project.useItalic
-        )
-    }) {
-        UserDefaults.standard.set(encoded, forKey: savedProjectsKey)
-    }
-}
-
-func loadProjectsFromDisk() -> [Project] {
-    guard let data = UserDefaults.standard.data(forKey: savedProjectsKey) else { return [] }
-    let decoder = JSONDecoder()
-    guard let codableProjects = try? decoder.decode([CodableProject].self, from: data) else { return [] }
-    return codableProjects.map { codable in
-        Project(
-            title: codable.title,
-            artwork: codable.artworkData.flatMap { UIImage(data: $0) },
-            files: codable.files.map { URL(fileURLWithPath: $0) },
-            fontName: codable.fontName ?? "System",
-            useBold: codable.useBold ?? false,
-            useItalic: codable.useItalic ?? false
-        )
-    }
-}
 
 
 struct ContentView: View {
@@ -204,42 +171,6 @@ struct ContentView: View {
         }
     }
 }
-
-
-
-struct ImagePicker: UIViewControllerRepresentable {
-    @Binding var image: UIImage?
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-
-    func makeUIViewController(context: Context) -> UIImagePickerController {
-        let picker = UIImagePickerController()
-        picker.delegate = context.coordinator
-        return picker
-    }
-
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
-
-    class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
-        let parent: ImagePicker
-
-        init(_ parent: ImagePicker) {
-            self.parent = parent
-        }
-
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
-            if let uiImage = info[.originalImage] as? UIImage {
-                parent.image = uiImage
-            }
-            picker.dismiss(animated: true)
-        }
-    }
-}
-
-
-
 
 #Preview {
     ContentView()

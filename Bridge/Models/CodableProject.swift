@@ -1,4 +1,11 @@
+//
 // CodableProject.swift
+// Bridge
+//
+// This file contains the CodableProject model for disk persistence of Projects.
+// Only stores file paths and metadata, never lyrics content directly.
+// Lyrics content is always stored in separate .txt files referenced by file paths.
+//
 
 import Foundation
 import UIKit
