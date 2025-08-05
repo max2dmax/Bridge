@@ -1,4 +1,11 @@
-//// ProjectDetailView.swift
+//
+// ProjectDetailView.swift
+// Bridge
+//
+// This file contains the ProjectDetailView for editing project details.
+// All lyrics editing reads/writes from .txt files using Persistence.swift functions.
+// Uses ImagePicker.swift and DocumentPicker.swift for file selection.
+//
 
 import SwiftUI
 import Foundation
@@ -115,10 +122,7 @@ struct ProjectDetailView: View {
                 // Lyrics edit
                 if project.files.contains(where: { $0.pathExtension.lowercased() == "txt" }) {
                     Button("Edit Lyrics") {
-                        if let url = project.files.first(where: { $0.pathExtension.lowercased() == "txt" }),
-                           let text = try? String(contentsOf: url, encoding: .utf8) {
-                            newLyricsText = text
-                        }
+                        newLyricsText = loadLyrics(from: project)
                         showLyricsEditor = true
                     }
                     .frame(maxWidth: .infinity)
@@ -138,10 +142,11 @@ struct ProjectDetailView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
 
-                if let url = project.files.first(where: { $0.pathExtension.lowercased() == "txt" }),
-                   let text = try? String(contentsOf: url, encoding: .utf8) {
+                // Display current lyrics
+                let currentLyrics = loadLyrics(from: project)
+                if !currentLyrics.isEmpty {
                     ScrollView {
-                        Text(text).padding(.vertical, 8)
+                        Text(currentLyrics).padding(.vertical, 8)
                     }
                     .frame(maxHeight: 200)
                 }
@@ -191,16 +196,23 @@ struct ProjectDetailView: View {
                         .padding()
                     HStack {
                         Button("Save Lyrics") {
-                            if let url = project.files.first(where: { $0.pathExtension.lowercased() == "txt" }) {
-                                // Archive old lyrics
-                                if let old = try? String(contentsOf: url, encoding: .utf8),
-                                   let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-                                    let archiveURL = dir.appendingPathComponent("Archived_Lyrics_\(UUID().uuidString.prefix(6)).txt")
-                                    try? old.write(to: archiveURL, atomically: true, encoding: .utf8)
-                                }
-                                try? newLyricsText.write(to: url, atomically: true, encoding: .utf8)
-                                onUpdate?(project)
+                            // Ensure the project has a lyrics file first
+                            if !project.files.contains(where: { $0.pathExtension.lowercased() == "txt" }) {
+                                ensureLyricsFile(for: &project)
                             }
+                            
+                            // Archive old lyrics if they exist
+                            let oldLyrics = loadLyrics(from: project)
+                            if !oldLyrics.isEmpty {
+                                if let documentsDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+                                    let archiveURL = documentsDir.appendingPathComponent("Archived_Lyrics_\(UUID().uuidString.prefix(6)).txt")
+                                    try? oldLyrics.write(to: archiveURL, atomically: true, encoding: .utf8)
+                                }
+                            }
+                            
+                            // Save new lyrics
+                            saveLyrics(newLyricsText, to: project)
+                            onUpdate?(project)
                             showLyricsEditor = false
                         }
                         .padding()
@@ -269,13 +281,7 @@ struct ProjectDetailView: View {
         .onChange(of: project) { updatedProject in
             // Persist updated project back to disk
             onUpdate?(updatedProject)
-            var allProjects = loadProjectsFromDisk()
-            if let index = allProjects.firstIndex(where: { $0.id == updatedProject.id }) {
-                allProjects[index] = updatedProject
-            } else {
-                allProjects.append(updatedProject)
-            }
-            saveProjectsToDisk(allProjects)
+        }
         }
     }
 }

@@ -1,4 +1,10 @@
-//// DocumentPicker.swift
+//
+// DocumentPicker.swift
+// Bridge
+//
+// This file contains the DocumentPicker UIViewControllerRepresentable for selecting documents.
+// Used for selecting audio files, text files, and other project files across the app.
+//
 
 import SwiftUI
 import UniformTypeIdentifiers

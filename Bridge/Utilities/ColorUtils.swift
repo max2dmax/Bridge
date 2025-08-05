@@ -1,4 +1,10 @@
-//// ColorUtils.swift
+//
+// ColorUtils.swift
+// Bridge
+//
+// This file contains color utility functions for extracting dominant colors from images.
+// Used to create dynamic gradient backgrounds based on project artwork.
+//
 
 import SwiftUI
 import UIKit

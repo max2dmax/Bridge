@@ -1,4 +1,11 @@
-//// Project.swift
+//
+// Project.swift
+// Bridge
+//
+// This file contains the Project model representing a music project.
+// Projects always have a lyrics .txt file in their files array.
+// Use Persistence.swift functions for creating/loading/saving projects.
+//
 
 import Foundation
 import UIKit
