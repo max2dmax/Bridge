@@ -1,12 +1,3 @@
-//
-// ProjectDetailView.swift
-// Bridge
-//
-// This file contains the ProjectDetailView for editing project details.
-// All lyrics editing reads/writes from .txt files using Persistence.swift functions.
-// Uses ImagePicker.swift and DocumentPicker.swift for file selection.
-//
-
 import SwiftUI
 import Foundation
 import UniformTypeIdentifiers
@@ -30,6 +21,8 @@ struct ProjectDetailView: View {
     @State private var useBold = false
     @State private var useItalic = false
     @State private var selectedFontName: String = "System"
+    @State private var currentLyrics: String = "" // <-- Add this
+
     private let fonts = ["System","Helvetica Neue","Courier","Georgia","Avenir Next"]
 
     private var dominantColor: Color {
@@ -122,7 +115,8 @@ struct ProjectDetailView: View {
                 // Lyrics edit
                 if project.files.contains(where: { $0.pathExtension.lowercased() == "txt" }) {
                     Button("Edit Lyrics") {
-                        newLyricsText = loadLyrics(from: project)
+                        currentLyrics = loadLyrics(from: project)
+                        newLyricsText = currentLyrics
                         showLyricsEditor = true
                     }
                     .frame(maxWidth: .infinity)
@@ -132,8 +126,12 @@ struct ProjectDetailView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                 } else {
                     Button("Create Lyrics Document") {
+                        ensureLyricsFile(for: &project)
+                        currentLyrics = ""
                         newLyricsText = ""
                         showLyricsEditor = true
+                        // Project updated, inform parent
+                        onUpdate?(project)
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -143,7 +141,6 @@ struct ProjectDetailView: View {
                 }
 
                 // Display current lyrics
-                let currentLyrics = loadLyrics(from: project)
                 if !currentLyrics.isEmpty {
                     ScrollView {
                         Text(currentLyrics).padding(.vertical, 8)
@@ -184,6 +181,9 @@ struct ProjectDetailView: View {
                 startPoint: .top, endPoint: .bottom
             )
         )
+        .onAppear {
+            currentLyrics = loadLyrics(from: project)
+        }
         .sheet(isPresented: $showLyricsEditor) {
             NavigationStack {
                 VStack {
@@ -212,6 +212,7 @@ struct ProjectDetailView: View {
                             
                             // Save new lyrics
                             saveLyrics(newLyricsText, to: project)
+                            currentLyrics = newLyricsText // <-- Update immediately!
                             onUpdate?(project)
                             showLyricsEditor = false
                         }
@@ -281,13 +282,7 @@ struct ProjectDetailView: View {
         .onChange(of: project) { updatedProject in
             // Persist updated project back to disk
             onUpdate?(updatedProject)
-        }
+            currentLyrics = loadLyrics(from: updatedProject) // in case project changes outside
         }
     }
-
-//  ProjectDetailView.swift
-//  Bridge
-//
-//  Created by Max stevenson on 8/5/25.
-//
-
+}
