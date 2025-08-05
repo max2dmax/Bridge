@@ -191,16 +191,43 @@ struct ProjectDetailView: View {
                         .padding()
                     HStack {
                         Button("Save Lyrics") {
-                            if let url = project.files.first(where: { $0.pathExtension.lowercased() == "txt" }) {
-                                // Archive old lyrics
-                                if let old = try? String(contentsOf: url, encoding: .utf8),
-                                   let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-                                    let archiveURL = dir.appendingPathComponent("Archived_Lyrics_\(UUID().uuidString.prefix(6)).txt")
-                                    try? old.write(to: archiveURL, atomically: true, encoding: .utf8)
+                            // Get existing lyrics file or create a new one
+                            let existingLyricsURL = project.files.first(where: { $0.pathExtension.lowercased() == "txt" })
+                            
+                            if let documentsDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+                                let lyricsURL: URL
+                                var updatedProject = project
+                                
+                                if let existingURL = existingLyricsURL {
+                                    // Use existing file and archive old content
+                                    lyricsURL = existingURL
+                                    if let oldContent = try? String(contentsOf: existingURL, encoding: .utf8) {
+                                        let archiveURL = documentsDir.appendingPathComponent("Archived_Lyrics_\(UUID().uuidString.prefix(6)).txt")
+                                        try? oldContent.write(to: archiveURL, atomically: true, encoding: .utf8)
+                                    }
+                                } else {
+                                    // Create new lyrics file
+                                    let sanitizedTitle = project.title.replacingOccurrences(of: "[^a-zA-Z0-9 ]", with: "", options: .regularExpression)
+                                    let fileName = "\(sanitizedTitle)_lyrics.txt"
+                                    lyricsURL = documentsDir.appendingPathComponent(fileName)
+                                    
+                                    // Add new file to project files
+                                    updatedProject.files.append(lyricsURL)
                                 }
-                                try? newLyricsText.write(to: url, atomically: true, encoding: .utf8)
-                                onUpdate?(project)
+                                
+                                // Write the new lyrics content
+                                if (try? newLyricsText.write(to: lyricsURL, atomically: true, encoding: .utf8)) != nil {
+                                    // Update the project state only if write succeeded
+                                    project = updatedProject
+                                    onUpdate?(updatedProject)
+                                } else {
+                                    // Handle write failure - for now just print, could show alert later
+                                    print("Error: Failed to save lyrics to file")
+                                }
+                            } else {
+                                print("Error: Could not access documents directory")
                             }
+                            
                             showLyricsEditor = false
                         }
                         .padding()
