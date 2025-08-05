@@ -1,12 +1,3 @@
-//
-// Persistence.swift
-// Bridge
-//
-// This file contains all disk persistence operations for Projects.
-// Handles saving/loading project metadata (file paths, not content) to/from UserDefaults.
-// Lyrics content is always stored in separate .txt files referenced by Project.files.
-//
-
 import Foundation
 import UIKit
 
@@ -29,26 +20,32 @@ func loadProjectsFromDisk() -> [Project] {
 }
 
 /// Ensure a project has a lyrics file. Creates one if it doesn't exist.
+/// If the file is missing on disk, recreate it.
 func ensureLyricsFile(for project: inout Project) {
-    // Check if project already has a .txt file
-    if project.files.contains(where: { $0.pathExtension.lowercased() == "txt" }) {
+    // Check if a .txt file is listed and if it really exists
+    if let lyricsURL = project.files.first(where: { $0.pathExtension.lowercased() == "txt" }) {
+        // If file doesn't exist on disk, (re-)create it
+        if !FileManager.default.fileExists(atPath: lyricsURL.path) {
+            do {
+                try "".write(to: lyricsURL, atomically: true, encoding: .utf8)
+            } catch {
+                print("Failed to (re)create missing lyrics file: \(error)")
+            }
+        }
         return
     }
-    
-    // Create a new lyrics file
-    guard let documentsDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
-        return
-    }
-    
-    let lyricsFileName = "Lyrics_\(project.title.replacingOccurrences(of: " ", with: "_"))_\(UUID().uuidString.prefix(6)).txt"
-    let lyricsURL = documentsDir.appendingPathComponent(lyricsFileName)
-    
-    // Create empty lyrics file
-    do {
-        try "".write(to: lyricsURL, atomically: true, encoding: .utf8)
-        project.files.append(lyricsURL)
-    } catch {
-        print("Failed to create lyrics file: \(error)")
+    // No .txt file listed, so create one
+    if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+        // Use a safe filename
+        let safeTitle = project.title.replacingOccurrences(of: " ", with: "_").replacingOccurrences(of: "/", with: "-")
+        let fileName = "Lyrics_\(safeTitle)_\(UUID().uuidString.prefix(6)).txt"
+        let newLyricsURL = dir.appendingPathComponent(fileName)
+        do {
+            try "".write(to: newLyricsURL, atomically: true, encoding: .utf8)
+            project.files.append(newLyricsURL)
+        } catch {
+            print("Failed to create lyrics file: \(error)")
+        }
     }
 }
 
@@ -57,7 +54,6 @@ func loadLyrics(from project: Project) -> String {
     guard let lyricsURL = project.files.first(where: { $0.pathExtension.lowercased() == "txt" }) else {
         return ""
     }
-    
     do {
         return try String(contentsOf: lyricsURL, encoding: .utf8)
     } catch {
@@ -72,7 +68,6 @@ func saveLyrics(_ lyrics: String, to project: Project) {
         print("No lyrics file found in project")
         return
     }
-    
     do {
         try lyrics.write(to: lyricsURL, atomically: true, encoding: .utf8)
     } catch {

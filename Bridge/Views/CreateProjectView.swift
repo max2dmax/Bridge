@@ -54,10 +54,8 @@ struct CreateProjectView: View {
                     Button("Save") {
                         // Create the project first
                         var proj = Project(title: title, artwork: selectedImage, files: selectedFiles)
-                        
-                        // Ensure the project has a lyrics file
+                        // Ensure the project has a lyrics file (and that it exists on disk!)
                         ensureLyricsFile(for: &proj)
-                        
                         onSave(proj)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                             NotificationCenter.default
@@ -81,9 +79,6 @@ struct CreateProjectView: View {
         }
     }
 }
-//  CreateProjectView.swift
-//  Bridge
-//
-//  Created by Max stevenson on 8/5/25.
-//
 
+// No local/private ensureLyricsFile(for:) in this file anymore!
+// The function is now only in your persistence helper.

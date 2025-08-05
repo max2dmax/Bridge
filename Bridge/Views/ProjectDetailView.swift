@@ -284,7 +284,7 @@ struct ProjectDetailView: View {
         }
         }
     }
-}
+
 //  ProjectDetailView.swift
 //  Bridge
 //
