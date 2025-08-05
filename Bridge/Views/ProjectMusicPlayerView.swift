@@ -46,17 +46,25 @@ struct ProjectMusicPlayerView: View {
                     AudioPlayerView(url: audioURL)
                 }
 
-                if let txtURL = project.files.first(where: {
-                    $0.pathExtension.lowercased() == "txt"
-                }), let lyrics = try? String(contentsOf: txtURL) {
+                if let lyrics = project.lyrics, !lyrics.isEmpty {
                     ScrollView {
                         Text(lyrics)
                             .padding()
                             .foregroundColor(isArtLight ? .black : .white)
                     }
                     .frame(maxHeight: 200)
+                } else if let txtURL = project.files.first(where: {
+                    $0.pathExtension.lowercased() == "txt"
+                }), let lyricsFromFile = try? String(contentsOf: txtURL) {
+                    ScrollView {
+                        Text(lyricsFromFile)
+                            .padding()
+                            .foregroundColor(isArtLight ? .black : .white)
+                    }
+                    .frame(maxHeight: 200)
                 } else {
                     Text("No lyrics available.")
+                        .foregroundColor(isArtLight ? .black : .white)
                 }
             }
             .padding()

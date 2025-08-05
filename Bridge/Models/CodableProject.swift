@@ -11,6 +11,7 @@ struct CodableProject: Codable {
     let fontName: String?
     let useBold: Bool?
     let useItalic: Bool?
+    let lyrics: String?
 }
 
 extension CodableProject {
@@ -24,7 +25,8 @@ extension CodableProject {
             files: fileURLs,
             fontName: fontName ?? "System",
             useBold: useBold ?? false,
-            useItalic: useItalic ?? false
+            useItalic: useItalic ?? false,
+            lyrics: lyrics
         )
     }
 }
@@ -40,7 +42,8 @@ extension Project {
             artworkData: artData,
             fontName: fontName,
             useBold: useBold,
-            useItalic: useItalic
+            useItalic: useItalic,
+            lyrics: lyrics
         )
     }
 }//

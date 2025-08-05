@@ -20,7 +20,8 @@ func saveProjectsToDisk(_ projects: [Project]) {
             artworkData: project.artwork?.pngData(),
             fontName: project.fontName,
             useBold: project.useBold,
-            useItalic: project.useItalic
+            useItalic: project.useItalic,
+            lyrics: project.lyrics
         )
     }) {
         UserDefaults.standard.set(encoded, forKey: savedProjectsKey)
@@ -32,14 +33,25 @@ func loadProjectsFromDisk() -> [Project] {
     let decoder = JSONDecoder()
     guard let codableProjects = try? decoder.decode([CodableProject].self, from: data) else { return [] }
     return codableProjects.map { codable in
-        Project(
+        var project = Project(
             title: codable.title,
             artwork: codable.artworkData.flatMap { UIImage(data: $0) },
             files: codable.files.map { URL(fileURLWithPath: $0) },
             fontName: codable.fontName ?? "System",
             useBold: codable.useBold ?? false,
-            useItalic: codable.useItalic ?? false
+            useItalic: codable.useItalic ?? false,
+            lyrics: codable.lyrics
         )
+        
+        // Backward compatibility: if lyrics is nil, try to load from .txt file
+        if project.lyrics == nil {
+            if let txtURL = project.files.first(where: { $0.pathExtension.lowercased() == "txt" }),
+               let lyricsContent = try? String(contentsOf: txtURL, encoding: .utf8) {
+                project.lyrics = lyricsContent
+            }
+        }
+        
+        return project
     }
 }
 

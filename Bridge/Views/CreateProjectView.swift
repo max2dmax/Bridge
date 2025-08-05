@@ -56,7 +56,7 @@ struct CreateProjectView: View {
                                 updated.append(url)
                             }
                         }
-                        let proj = Project(title: title, artwork: selectedImage, files: updated)
+                        let proj = Project(title: title, artwork: selectedImage, files: updated, lyrics: nil)
                         onSave(proj)
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                             NotificationCenter.default

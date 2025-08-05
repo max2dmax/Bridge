@@ -17,7 +17,6 @@ struct ProjectDetailView: View {
     @State private var updatedArtwork: UIImage?
     @State private var additionalFiles: [URL] = []
     @State private var showLyricsEditor = false
-    @State private var newLyricsText = ""
     @State private var showEditTitleAlert = false
     @State private var editedTitle = ""
     @State private var useBold = false
@@ -113,12 +112,8 @@ struct ProjectDetailView: View {
                 Divider()
 
                 // Lyrics edit
-                if project.files.contains(where: { $0.pathExtension.lowercased() == "txt" }) {
+                if project.lyrics != nil || project.files.contains(where: { $0.pathExtension.lowercased() == "txt" }) {
                     Button("Edit Lyrics") {
-                        if let url = project.files.first(where: { $0.pathExtension.lowercased() == "txt" }),
-                           let text = try? String(contentsOf: url, encoding: .utf8) {
-                            newLyricsText = text
-                        }
                         showLyricsEditor = true
                     }
                     .frame(maxWidth: .infinity)
@@ -128,7 +123,6 @@ struct ProjectDetailView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                 } else {
                     Button("Create Lyrics Document") {
-                        newLyricsText = ""
                         showLyricsEditor = true
                     }
                     .frame(maxWidth: .infinity)
@@ -138,10 +132,9 @@ struct ProjectDetailView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
 
-                if let url = project.files.first(where: { $0.pathExtension.lowercased() == "txt" }),
-                   let text = try? String(contentsOf: url, encoding: .utf8) {
+                if let lyrics = project.lyrics, !lyrics.isEmpty {
                     ScrollView {
-                        Text(text).padding(.vertical, 8)
+                        Text(lyrics).padding(.vertical, 8)
                     }
                     .frame(maxHeight: 200)
                 }
@@ -184,23 +177,36 @@ struct ProjectDetailView: View {
                 VStack {
                     Text("Edit Lyrics")
                         .font(.headline)
-                    TextEditor(text: $newLyricsText)
+                    TextEditor(text: Binding(
+                        get: { project.lyrics ?? "" },
+                        set: { project.lyrics = $0.isEmpty ? nil : $0 }
+                    ))
                         .multilineTextAlignment(.center)
                         .frame(height: 200)
                         .border(Color.gray)
                         .padding()
                     HStack {
                         Button("Save Lyrics") {
-                            if let url = project.files.first(where: { $0.pathExtension.lowercased() == "txt" }) {
-                                // Archive old lyrics
-                                if let old = try? String(contentsOf: url, encoding: .utf8),
+                            // Write to .txt file for backward compatibility
+                            if let txtURL = project.files.first(where: { $0.pathExtension.lowercased() == "txt" }) {
+                                // Archive old lyrics if they exist
+                                if let oldLyrics = try? String(contentsOf: txtURL, encoding: .utf8),
+                                   !oldLyrics.isEmpty,
                                    let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
                                     let archiveURL = dir.appendingPathComponent("Archived_Lyrics_\(UUID().uuidString.prefix(6)).txt")
-                                    try? old.write(to: archiveURL, atomically: true, encoding: .utf8)
+                                    try? oldLyrics.write(to: archiveURL, atomically: true, encoding: .utf8)
                                 }
-                                try? newLyricsText.write(to: url, atomically: true, encoding: .utf8)
-                                onUpdate?(project)
+                                try? (project.lyrics ?? "").write(to: txtURL, atomically: true, encoding: .utf8)
+                            } else {
+                                // Create .txt file if it doesn't exist
+                                if let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+                                    let name = "Lyrics_\(UUID().uuidString.prefix(6)).txt"
+                                    let url = dir.appendingPathComponent(name)
+                                    try? (project.lyrics ?? "").write(to: url, atomically: true, encoding: .utf8)
+                                    project.files.append(url)
+                                }
                             }
+                            onUpdate?(project)
                             showLyricsEditor = false
                         }
                         .padding()

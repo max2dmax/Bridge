@@ -11,6 +11,7 @@ struct Project: Identifiable, Equatable, Hashable {
     var fontName: String = "System"
     var useBold: Bool = false
     var useItalic: Bool = false
+    var lyrics: String? = nil
 }
 //  Project.swift
 //  Bridge
