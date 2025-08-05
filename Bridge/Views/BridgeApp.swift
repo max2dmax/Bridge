@@ -1,14 +1,14 @@
 //
-//  BridgeApp.swift
-//  Bridge
+//  Bridge1App.swift
+//  Bridge1
 //
-//  Created by Max Stevenson on 8/1/25.
+//  Created by Max stevenson on 8/3/25.
 //
 
 import SwiftUI
 
 @main
-struct BridgeApp: App {
+struct Bridge1App: App {
     var body: some Scene {
         WindowGroup {
             ContentView()

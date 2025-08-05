@@ -6,63 +6,92 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		F4D9245D2E3F7072000FE055 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = F4D9245C2E3F7072000FE055 /* ZIPFoundation */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
-		F4EFE9572E3D5E70004E827C /* PBXContainerItemProxy */ = {
+		F4D9241A2E3F4A58000FE055 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F4EFE9402E3D5E6E004E827C /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = F4EFE9472E3D5E6E004E827C;
-			remoteInfo = Bridge;
+			remoteGlobalIDString = F4D924092E3F4A56000FE055;
+			remoteInfo = Bridge1;
 		};
-		F4EFE9612E3D5E70004E827C /* PBXContainerItemProxy */ = {
+		F4D924242E3F4A58000FE055 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = F4EFE9402E3D5E6E004E827C /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = F4EFE9472E3D5E6E004E827C;
-			remoteInfo = Bridge;
+			remoteGlobalIDString = F4D924092E3F4A56000FE055;
+			remoteInfo = Bridge1;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		F4EFE9482E3D5E6E004E827C /* Bridge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bridge.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		F4EFE9562E3D5E70004E827C /* BridgeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BridgeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		F4EFE9602E3D5E70004E827C /* BridgeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BridgeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4D9240A2E3F4A56000FE055 /* Bridge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bridge.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4D924192E3F4A58000FE055 /* BridgeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BridgeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4D924232E3F4A58000FE055 /* BridgeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BridgeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		F4D924372E3F4B08000FE055 /* Exceptions for "BridgeTests" folder in "BridgeTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				BridgeTests.swift,
+			);
+			target = F4D924182E3F4A58000FE055 /* BridgeTests */;
+		};
+		F4D924392E3F4B3D000FE055 /* Exceptions for "BridgeUITests" folder in "BridgeUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				BridgeUITests.swift,
+				BridgeUITestsLaunchTests.swift,
+			);
+			target = F4D924222E3F4A58000FE055 /* BridgeUITests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		F4EFE94A2E3D5E6E004E827C /* Bridge */ = {
+		F4D9240B2E3F4A56000FE055 /* Bridge */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Bridge;
 			sourceTree = "<group>";
 		};
-		F4EFE9592E3D5E70004E827C /* BridgeTests */ = {
+		F4D9241C2E3F4A58000FE055 /* BridgeTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				F4D924372E3F4B08000FE055 /* Exceptions for "BridgeTests" folder in "BridgeTests" target */,
+			);
 			path = BridgeTests;
 			sourceTree = "<group>";
 		};
-		F4EFE9632E3D5E70004E827C /* BridgeUITests */ = {
+		F4D924262E3F4A58000FE055 /* BridgeUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				F4D924392E3F4B3D000FE055 /* Exceptions for "BridgeUITests" folder in "BridgeUITests" target */,
+			);
 			path = BridgeUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		F4EFE9452E3D5E6E004E827C /* Frameworks */ = {
+		F4D924072E3F4A56000FE055 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F4D9245D2E3F7072000FE055 /* ZIPFoundation in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4D924162E3F4A58000FE055 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		F4EFE9532E3D5E70004E827C /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F4EFE95D2E3D5E70004E827C /* Frameworks */ = {
+		F4D924202E3F4A58000FE055 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -75,9 +104,9 @@
 		F4EFE93F2E3D5E6E004E827C = {
 			isa = PBXGroup;
 			children = (
-				F4EFE94A2E3D5E6E004E827C /* Bridge */,
-				F4EFE9592E3D5E70004E827C /* BridgeTests */,
-				F4EFE9632E3D5E70004E827C /* BridgeUITests */,
+				F4D9240B2E3F4A56000FE055 /* Bridge */,
+				F4D9241C2E3F4A58000FE055 /* BridgeTests */,
+				F4D924262E3F4A58000FE055 /* BridgeUITests */,
 				F4EFE9492E3D5E6E004E827C /* Products */,
 			);
 			sourceTree = "<group>";
@@ -85,9 +114,9 @@
 		F4EFE9492E3D5E6E004E827C /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F4EFE9482E3D5E6E004E827C /* Bridge.app */,
-				F4EFE9562E3D5E70004E827C /* BridgeTests.xctest */,
-				F4EFE9602E3D5E70004E827C /* BridgeUITests.xctest */,
+				F4D9240A2E3F4A56000FE055 /* Bridge.app */,
+				F4D924192E3F4A58000FE055 /* BridgeTests.xctest */,
+				F4D924232E3F4A58000FE055 /* BridgeUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -95,72 +124,73 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		F4EFE9472E3D5E6E004E827C /* Bridge */ = {
+		F4D924092E3F4A56000FE055 /* Bridge */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F4EFE96A2E3D5E70004E827C /* Build configuration list for PBXNativeTarget "Bridge" */;
+			buildConfigurationList = F4D9242B2E3F4A58000FE055 /* Build configuration list for PBXNativeTarget "Bridge" */;
 			buildPhases = (
-				F4EFE9442E3D5E6E004E827C /* Sources */,
-				F4EFE9452E3D5E6E004E827C /* Frameworks */,
-				F4EFE9462E3D5E6E004E827C /* Resources */,
+				F4D924062E3F4A56000FE055 /* Sources */,
+				F4D924072E3F4A56000FE055 /* Frameworks */,
+				F4D924082E3F4A56000FE055 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				F4EFE94A2E3D5E6E004E827C /* Bridge */,
+				F4D9240B2E3F4A56000FE055 /* Bridge */,
 			);
 			name = Bridge;
 			packageProductDependencies = (
+				F4D9245C2E3F7072000FE055 /* ZIPFoundation */,
 			);
-			productName = Bridge;
-			productReference = F4EFE9482E3D5E6E004E827C /* Bridge.app */;
+			productName = Bridge1;
+			productReference = F4D9240A2E3F4A56000FE055 /* Bridge.app */;
 			productType = "com.apple.product-type.application";
 		};
-		F4EFE9552E3D5E70004E827C /* BridgeTests */ = {
+		F4D924182E3F4A58000FE055 /* BridgeTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F4EFE96D2E3D5E70004E827C /* Build configuration list for PBXNativeTarget "BridgeTests" */;
+			buildConfigurationList = F4D9242E2E3F4A58000FE055 /* Build configuration list for PBXNativeTarget "BridgeTests" */;
 			buildPhases = (
-				F4EFE9522E3D5E70004E827C /* Sources */,
-				F4EFE9532E3D5E70004E827C /* Frameworks */,
-				F4EFE9542E3D5E70004E827C /* Resources */,
+				F4D924152E3F4A58000FE055 /* Sources */,
+				F4D924162E3F4A58000FE055 /* Frameworks */,
+				F4D924172E3F4A58000FE055 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				F4EFE9582E3D5E70004E827C /* PBXTargetDependency */,
+				F4D9241B2E3F4A58000FE055 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				F4EFE9592E3D5E70004E827C /* BridgeTests */,
+				F4D9241C2E3F4A58000FE055 /* BridgeTests */,
 			);
 			name = BridgeTests;
 			packageProductDependencies = (
 			);
-			productName = BridgeTests;
-			productReference = F4EFE9562E3D5E70004E827C /* BridgeTests.xctest */;
+			productName = Bridge1Tests;
+			productReference = F4D924192E3F4A58000FE055 /* BridgeTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		F4EFE95F2E3D5E70004E827C /* BridgeUITests */ = {
+		F4D924222E3F4A58000FE055 /* BridgeUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F4EFE9702E3D5E70004E827C /* Build configuration list for PBXNativeTarget "BridgeUITests" */;
+			buildConfigurationList = F4D924312E3F4A58000FE055 /* Build configuration list for PBXNativeTarget "BridgeUITests" */;
 			buildPhases = (
-				F4EFE95C2E3D5E70004E827C /* Sources */,
-				F4EFE95D2E3D5E70004E827C /* Frameworks */,
-				F4EFE95E2E3D5E70004E827C /* Resources */,
+				F4D9241F2E3F4A58000FE055 /* Sources */,
+				F4D924202E3F4A58000FE055 /* Frameworks */,
+				F4D924212E3F4A58000FE055 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				F4EFE9622E3D5E70004E827C /* PBXTargetDependency */,
+				F4D924252E3F4A58000FE055 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				F4EFE9632E3D5E70004E827C /* BridgeUITests */,
+				F4D924262E3F4A58000FE055 /* BridgeUITests */,
 			);
 			name = BridgeUITests;
 			packageProductDependencies = (
 			);
-			productName = BridgeUITests;
-			productReference = F4EFE9602E3D5E70004E827C /* BridgeUITests.xctest */;
+			productName = Bridge1UITests;
+			productReference = F4D924232E3F4A58000FE055 /* BridgeUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -170,19 +200,19 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1640;
+				LastSwiftUpdateCheck = 1620;
 				LastUpgradeCheck = 1640;
 				TargetAttributes = {
-					F4EFE9472E3D5E6E004E827C = {
-						CreatedOnToolsVersion = 16.4;
+					F4D924092E3F4A56000FE055 = {
+						CreatedOnToolsVersion = 16.2;
 					};
-					F4EFE9552E3D5E70004E827C = {
-						CreatedOnToolsVersion = 16.4;
-						TestTargetID = F4EFE9472E3D5E6E004E827C;
+					F4D924182E3F4A58000FE055 = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = F4D924092E3F4A56000FE055;
 					};
-					F4EFE95F2E3D5E70004E827C = {
-						CreatedOnToolsVersion = 16.4;
-						TestTargetID = F4EFE9472E3D5E6E004E827C;
+					F4D924222E3F4A58000FE055 = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = F4D924092E3F4A56000FE055;
 					};
 				};
 			};
@@ -195,34 +225,37 @@
 			);
 			mainGroup = F4EFE93F2E3D5E6E004E827C;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				F4D9245B2E3F7072000FE055 /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F4EFE9492E3D5E6E004E827C /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				F4EFE9472E3D5E6E004E827C /* Bridge */,
-				F4EFE9552E3D5E70004E827C /* BridgeTests */,
-				F4EFE95F2E3D5E70004E827C /* BridgeUITests */,
+				F4D924092E3F4A56000FE055 /* Bridge */,
+				F4D924182E3F4A58000FE055 /* BridgeTests */,
+				F4D924222E3F4A58000FE055 /* BridgeUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		F4EFE9462E3D5E6E004E827C /* Resources */ = {
+		F4D924082E3F4A56000FE055 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		F4EFE9542E3D5E70004E827C /* Resources */ = {
+		F4D924172E3F4A58000FE055 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		F4EFE95E2E3D5E70004E827C /* Resources */ = {
+		F4D924212E3F4A58000FE055 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -232,21 +265,21 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		F4EFE9442E3D5E6E004E827C /* Sources */ = {
+		F4D924062E3F4A56000FE055 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		F4EFE9522E3D5E70004E827C /* Sources */ = {
+		F4D924152E3F4A58000FE055 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		F4EFE95C2E3D5E70004E827C /* Sources */ = {
+		F4D9241F2E3F4A58000FE055 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -256,19 +289,158 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		F4EFE9582E3D5E70004E827C /* PBXTargetDependency */ = {
+		F4D9241B2E3F4A58000FE055 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = F4EFE9472E3D5E6E004E827C /* Bridge */;
-			targetProxy = F4EFE9572E3D5E70004E827C /* PBXContainerItemProxy */;
+			target = F4D924092E3F4A56000FE055 /* Bridge */;
+			targetProxy = F4D9241A2E3F4A58000FE055 /* PBXContainerItemProxy */;
 		};
-		F4EFE9622E3D5E70004E827C /* PBXTargetDependency */ = {
+		F4D924252E3F4A58000FE055 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = F4EFE9472E3D5E6E004E827C /* Bridge */;
-			targetProxy = F4EFE9612E3D5E70004E827C /* PBXContainerItemProxy */;
+			target = F4D924092E3F4A56000FE055 /* Bridge */;
+			targetProxy = F4D924242E3F4A58000FE055 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		F4D9242C2E3F4A58000FE055 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Bridge/Preview Content\"";
+				DEVELOPMENT_TEAM = 8429HFWTKM;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = richkid.Bridge1;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		F4D9242D2E3F4A58000FE055 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Bridge/Preview Content\"";
+				DEVELOPMENT_TEAM = 8429HFWTKM;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = richkid.Bridge1;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F4D9242F2E3F4A58000FE055 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = richkid.Bridge1Tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Bridge1.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Bridge1";
+			};
+			name = Debug;
+		};
+		F4D924302E3F4A58000FE055 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = richkid.Bridge1Tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Bridge1.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Bridge1";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		F4D924322E3F4A58000FE055 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = richkid.Bridge1UITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Bridge1;
+			};
+			name = Debug;
+		};
+		F4D924332E3F4A58000FE055 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = richkid.Bridge1UITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Bridge1;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		F4EFE9682E3D5E70004E827C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -383,171 +555,36 @@
 			};
 			name = Release;
 		};
-		F4EFE96B2E3D5E70004E827C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Bridge/Bridge.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 8429HFWTKM;
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
-				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
-				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
-				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 15.5;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = richkid.Bridge;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				REGISTER_APP_GROUPS = YES;
-				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
-				XROS_DEPLOYMENT_TARGET = 2.5;
-			};
-			name = Debug;
-		};
-		F4EFE96C2E3D5E70004E827C /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = Bridge/Bridge.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 8429HFWTKM;
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
-				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
-				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
-				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
-				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
-				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 15.5;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = richkid.Bridge;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				REGISTER_APP_GROUPS = YES;
-				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
-				XROS_DEPLOYMENT_TARGET = 2.5;
-			};
-			name = Release;
-		};
-		F4EFE96E2E3D5E70004E827C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
-				MACOSX_DEPLOYMENT_TARGET = 15.5;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = richkid.BridgeTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Bridge.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Bridge";
-				XROS_DEPLOYMENT_TARGET = 2.5;
-			};
-			name = Debug;
-		};
-		F4EFE96F2E3D5E70004E827C /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
-				MACOSX_DEPLOYMENT_TARGET = 15.5;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = richkid.BridgeTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Bridge.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Bridge";
-				XROS_DEPLOYMENT_TARGET = 2.5;
-			};
-			name = Release;
-		};
-		F4EFE9712E3D5E70004E827C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
-				MACOSX_DEPLOYMENT_TARGET = 15.5;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = richkid.BridgeUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_TARGET_NAME = Bridge;
-				XROS_DEPLOYMENT_TARGET = 2.5;
-			};
-			name = Debug;
-		};
-		F4EFE9722E3D5E70004E827C /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
-				MACOSX_DEPLOYMENT_TARGET = 15.5;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = richkid.BridgeUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
-				TEST_TARGET_NAME = Bridge;
-				XROS_DEPLOYMENT_TARGET = 2.5;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		F4D9242B2E3F4A58000FE055 /* Build configuration list for PBXNativeTarget "Bridge" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4D9242C2E3F4A58000FE055 /* Debug */,
+				F4D9242D2E3F4A58000FE055 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F4D9242E2E3F4A58000FE055 /* Build configuration list for PBXNativeTarget "BridgeTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4D9242F2E3F4A58000FE055 /* Debug */,
+				F4D924302E3F4A58000FE055 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F4D924312E3F4A58000FE055 /* Build configuration list for PBXNativeTarget "BridgeUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F4D924322E3F4A58000FE055 /* Debug */,
+				F4D924332E3F4A58000FE055 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		F4EFE9432E3D5E6E004E827C /* Build configuration list for PBXProject "Bridge" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -557,34 +594,26 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F4EFE96A2E3D5E70004E827C /* Build configuration list for PBXNativeTarget "Bridge" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				F4EFE96B2E3D5E70004E827C /* Debug */,
-				F4EFE96C2E3D5E70004E827C /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		F4EFE96D2E3D5E70004E827C /* Build configuration list for PBXNativeTarget "BridgeTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				F4EFE96E2E3D5E70004E827C /* Debug */,
-				F4EFE96F2E3D5E70004E827C /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		F4EFE9702E3D5E70004E827C /* Build configuration list for PBXNativeTarget "BridgeUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				F4EFE9712E3D5E70004E827C /* Debug */,
-				F4EFE9722E3D5E70004E827C /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F4D9245B2E3F7072000FE055 /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/weichsel/ZIPFoundation";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.19;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F4D9245C2E3F7072000FE055 /* ZIPFoundation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F4D9245B2E3F7072000FE055 /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
+			productName = ZIPFoundation;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F4EFE9402E3D5E6E004E827C /* Project object */;
 }
