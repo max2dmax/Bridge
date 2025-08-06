@@ -93,14 +93,18 @@ struct GradientPickerView: View {
             }
             .navigationTitle("Customize Home")
             .navigationBarTitleDisplayMode(.inline)
-            .navigationBarItems(
-                leading: Button("Cancel") {
-                    presentationMode.wrappedValue.dismiss()
-                },
-                trailing: Button("Save") {
-                    saveChanges()
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        presentationMode.wrappedValue.dismiss()
+                    }
                 }
-            )
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Save") {
+                        saveChanges()
+                    }
+                }
+            }
         }
         .onAppear {
             setupTempValues()
