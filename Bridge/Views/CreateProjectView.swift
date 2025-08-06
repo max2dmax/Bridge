@@ -32,7 +32,7 @@ struct CreateProjectView: View {
                 }
 
                 Section(header: Text("Artwork")) {
-                    // --- Styled title preview above artwork ---
+                    // --- Stylized title preview above artwork ---
                     if !title.isEmpty {
                         Text(title)
                             .font(selectedFontName == "System"
@@ -70,6 +70,9 @@ struct CreateProjectView: View {
                         Text("System").tag("System")
                         Text("Helvetica Neue").tag("Helvetica Neue")
                         Text("Arial").tag("Arial")
+                        Text("Courier").tag("Courier")
+                        Text("Georgia").tag("Georgia")
+                        Text("Avenir Next").tag("Avenir Next")
                         // Add more fonts as needed
                     }
                     Toggle("Bold", isOn: $useBold)

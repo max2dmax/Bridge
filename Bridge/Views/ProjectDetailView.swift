@@ -67,12 +67,12 @@ struct ProjectDetailView: View {
                             .frame(maxWidth: 200)
                             .clipShape(RoundedRectangle(cornerRadius: 16))
 
-                        Text(editedTitle.isEmpty ? project.title : editedTitle)
-                            .font(editedTitle.isEmpty
-                                  ? .system(size: 28)
-                                  : Font.custom(editedTitle, size: 28))
-                            .fontWeight(useBold ? .bold : .regular)
-                            .italic(useItalic)
+                        Text(project.title)
+                            .font(project.fontName == "System"
+                                ? .system(size: 28)
+                                : Font.custom(project.fontName, size: 28))
+                            .fontWeight(project.useBold ? .bold : .regular)
+                            .italic(project.useItalic)
                             .foregroundColor(isArtLight ? .black : .white)
                             .padding(8)
                     }
