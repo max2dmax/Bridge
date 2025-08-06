@@ -38,12 +38,24 @@ struct ProjectMusicPlayerView: View {
             .ignoresSafeArea()
 
             VStack(spacing: 20) {
+                // --- Squared artwork + stylized overlay ---
                 if let art = project.artwork {
-                    Image(uiImage: art)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 200)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    ZStack(alignment: .bottomLeading) {
+                        Image(uiImage: art)
+                            .resizable()
+                            .aspectRatio(1, contentMode: .fit)
+                            .frame(maxWidth: 200)
+                            .clipShape(RoundedRectangle(cornerRadius: 16))
+
+                        Text(project.title)
+                            .font(project.fontName == "System"
+                                ? .system(size: 28)
+                                : Font.custom(project.fontName, size: 28))
+                            .fontWeight(project.useBold ? .bold : .regular)
+                            .italic(project.useItalic)
+                            .foregroundColor(isArtLight ? .black : .white)
+                            .padding(8)
+                    }
                 }
 
                 if let audioURL = project.files.first(where: {
@@ -76,4 +88,3 @@ struct ProjectMusicPlayerView: View {
 //
 //  Created by Max stevenson on 8/5/25.
 //
-

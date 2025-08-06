@@ -27,56 +27,67 @@ struct CreateProjectView: View {
     var body: some View {
         NavigationStack {
             Form {
+                // Song title at the top
                 Section(header: Text("Song Title")) {
                     TextField("Enter title", text: $title)
                 }
 
+                // Artwork section, overlayed preview after upload
                 Section(header: Text("Artwork")) {
-                    // --- Stylized title preview above artwork ---
-                    if !title.isEmpty {
-                        Text(title)
-                            .font(selectedFontName == "System"
-                                ? .system(size: 28)
-                                : Font.custom(selectedFontName, size: 28))
-                            .fontWeight(useBold ? .bold : .regular)
-                            .italic(useItalic)
-                            .foregroundColor(.primary)
-                            .padding(8)
-                    }
-
-                    if let img = selectedImage {
-                        Image(uiImage: img)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(height: 150)
-                    } else {
+                    if selectedImage == nil {
                         Button("Upload Artwork") {
+                            showingImagePicker = true
+                        }
+                    } else {
+                        ZStack(alignment: .bottomLeading) {
+                            Image(uiImage: selectedImage!)
+                                .resizable()
+                                .aspectRatio(1, contentMode: .fit)
+                                .frame(maxWidth: 200)
+                                .clipShape(RoundedRectangle(cornerRadius: 16))
+                            if !title.isEmpty {
+                                Text(title)
+                                    .font(selectedFontName == "System"
+                                        ? .system(size: 28)
+                                        : Font.custom(selectedFontName, size: 28))
+                                    .fontWeight(useBold ? .bold : .regular)
+                                    .italic(useItalic)
+                                    .foregroundColor(.white)
+                                    .padding(8)
+                                    .shadow(radius: 6)
+                            }
+                        }
+                        Button("Replace Artwork") {
                             showingImagePicker = true
                         }
                     }
                 }
 
-                Section(header: Text("Files")) {
-                    ForEach(selectedFiles, id: \.self) { file in
-                        Text(file.lastPathComponent)
-                    }
-                    Button("Upload Files") {
-                        showingFilePicker = true
+                // Style section appears ONLY after artwork is uploaded
+                if selectedImage != nil {
+                    Section(header: Text("Style")) {
+                        Picker("Font", selection: $selectedFontName) {
+                            Text("System").tag("System")
+                            Text("Helvetica Neue").tag("Helvetica Neue")
+                            Text("Arial").tag("Arial")
+                            Text("Courier").tag("Courier")
+                            Text("Georgia").tag("Georgia")
+                            Text("Avenir Next").tag("Avenir Next")
+                            // Add more fonts as needed
+                        }
+                        Toggle("Bold", isOn: $useBold)
+                        Toggle("Italic", isOn: $useItalic)
                     }
                 }
 
-                Section(header: Text("Working Title Style")) {
-                    Picker("Font", selection: $selectedFontName) {
-                        Text("System").tag("System")
-                        Text("Helvetica Neue").tag("Helvetica Neue")
-                        Text("Arial").tag("Arial")
-                        Text("Courier").tag("Courier")
-                        Text("Georgia").tag("Georgia")
-                        Text("Avenir Next").tag("Avenir Next")
-                        // Add more fonts as needed
+                // Upload files section, renamed to Upload Recording
+                Section(header: Text("Upload Recording")) {
+                    ForEach(selectedFiles, id: \.self) { file in
+                        Text(file.lastPathComponent)
                     }
-                    Toggle("Bold", isOn: $useBold)
-                    Toggle("Italic", isOn: $useItalic)
+                    Button("Upload Recording") {
+                        showingFilePicker = true
+                    }
                 }
             }
             .navigationTitle("New Song Project")
