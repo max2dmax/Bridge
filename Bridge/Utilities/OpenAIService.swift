@@ -26,7 +26,7 @@ class OpenAIService: ObservableObject {
     private let baseURL = "https://api.openai.com/v1/chat/completions"
     
     /// Chat message structure for OpenAI API
-    struct ChatMessage: Codable, Identifiable, Equatable {
+    struct ChatMessage: Codable, Identifiable, Equatable, MAXNETMessage {
         let id = UUID()
         let role: String // "system", "user", or "assistant" 
         let content: String
