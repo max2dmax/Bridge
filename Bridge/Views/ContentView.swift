@@ -13,24 +13,25 @@ import UIKit
 
 struct ContentView: View {
     @State private var projects: [Project] = loadProjectsFromDisk()
+    @State private var userPreferences: UserPreferences = loadUserPreferences()
     @State private var showingCreateSheet = false
     @State private var showMusicPlayer = false
     @State private var selectedMP3Project: Project?
     @State private var selectedProject: Project?
     @State private var showingDetails = false
     @State private var isSplashActive = true
+    @State private var showingGradientPicker = false
 
-    // Compute gradient colors from the first project's artwork, fallback to default
+    // Compute gradient colors based on user preferences
     private var backgroundGradientColors: [Color] {
-        if let artwork = projects.first?.artwork {
-            return dominantColors(from: artwork)
-        }
-        return [Color.gray.opacity(0.2), Color.black.opacity(0.3)]
+        return generateGradientColors(projects: projects, preferences: userPreferences)
     }
 
     // Determine if background is light for title contrast
     private var isBackgroundLight: Bool {
-        if let uiColor = projects.first?.artwork?.dominantColor() {
+        // Use first color from gradient to determine contrast
+        let firstColor = backgroundGradientColors.first ?? Color.gray
+        if let uiColor = UIColor(firstColor) {
             var white: CGFloat = 0
             uiColor.getWhite(&white, alpha: nil)
             return white > 0.7
@@ -40,10 +41,8 @@ struct ContentView: View {
 
     // Floating Action Button dominant color
     private var dominantFABColor: Color {
-        if let uiColor = projects.first?.artwork?.dominantColor() {
-            return Color(uiColor)
-        }
-        return .blue
+        // Use the primary gradient color for FAB
+        return backgroundGradientColors.first ?? .blue
     }
 
     var body: some View {
@@ -62,43 +61,46 @@ struct ContentView: View {
                         .ignoresSafeArea()
 
                         VStack {
-                            List(projects) { project in
-                                NavigationLink(destination: ProjectMusicPlayerView(project: project)) {
-                                    HStack {
-                                        if let artwork = project.artwork {
-                                            Image(uiImage: artwork)
-                                                .resizable()
-                                                .frame(width: 50, height: 50)
-                                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                                        } else {
-                                            Rectangle()
-                                                .fill(Color.gray.opacity(0.2))
-                                                .frame(width: 50, height: 50)
-                                        }
-                                        Text(project.title)
-                                    }
-                                }
-                                .contentShape(Rectangle())
-                                .swipeActions(edge: .trailing) {
-                                    Button("Project Contents") {
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                            selectedProject = project
-                                            showingDetails = true
+                            List {
+                                ForEach(projects) { project in
+                                    NavigationLink(destination: ProjectMusicPlayerView(project: project)) {
+                                        HStack {
+                                            if let artwork = project.artwork {
+                                                Image(uiImage: artwork)
+                                                    .resizable()
+                                                    .frame(width: 50, height: 50)
+                                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                            } else {
+                                                Rectangle()
+                                                    .fill(Color.gray.opacity(0.2))
+                                                    .frame(width: 50, height: 50)
+                                            }
+                                            Text(project.title)
                                         }
                                     }
-                                    .tint(.blue)
-                                }
-                                .swipeActions(edge: .leading) {
-                                    Button(role: .destructive) {
-                                        if let index = projects.firstIndex(of: project) {
-                                            projects.remove(at: index)
-                                            saveProjectsToDisk(projects)
+                                    .contentShape(Rectangle())
+                                    .swipeActions(edge: .trailing) {
+                                        Button("Project Contents") {
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                selectedProject = project
+                                                showingDetails = true
+                                            }
                                         }
-                                    } label: {
-                                        Label("Delete", systemImage: "trash")
+                                        .tint(.blue)
                                     }
+                                    .swipeActions(edge: .leading) {
+                                        Button(role: .destructive) {
+                                            if let index = projects.firstIndex(of: project) {
+                                                projects.remove(at: index)
+                                                saveProjectsToDisk(projects)
+                                            }
+                                        } label: {
+                                            Label("Delete", systemImage: "trash")
+                                        }
+                                    }
+                                    .listRowBackground(Color.clear)
                                 }
-                                .listRowBackground(Color.clear)
+                                .onMove(perform: moveProjects) // Enable drag & drop reordering
                             }
                             .listStyle(.plain)
                             .background(Color.clear)
@@ -125,13 +127,20 @@ struct ContentView: View {
                             }
                         }
                     }
-                    .navigationTitle(Text("Home")
-                        .font(.system(size: 26, weight: .heavy, design: .rounded))
-                        .foregroundColor(isBackgroundLight ? .black : .white))
+                    .navigationTitle(
+                        Text(userPreferences.username)
+                            .font(.system(size: 26, weight: .heavy, design: .rounded))
+                            .foregroundColor(isBackgroundLight ? .black : .white)
+                            .onLongPressGesture {
+                                // Long press on title opens gradient picker
+                                showingGradientPicker = true
+                            }
+                    )
                 }
                 .onAppear {
-                    // Load from disk on appear
+                    // Load from disk on appear and refresh user preferences
                     projects = loadProjectsFromDisk()
+                    userPreferences = loadUserPreferences()
                     NotificationCenter.default.addObserver(forName: Notification.Name("ProjectListShouldRefresh"), object: nil, queue: .main) { _ in
                         projects = projects
                     }
@@ -167,8 +176,25 @@ struct ContentView: View {
                         }
                     }
                 }
+                .sheet(isPresented: $showingGradientPicker) {
+                    GradientPickerView(
+                        preferences: $userPreferences,
+                        projects: projects,
+                        onSave: {
+                            // Save preferences and refresh view
+                            saveUserPreferences(userPreferences)
+                        }
+                    )
+                }
             }
         }
+    }
+    
+    /// Handle drag & drop reordering of projects
+    private func moveProjects(from source: IndexSet, to destination: Int) {
+        projects.move(fromOffsets: source, toOffset: destination)
+        // Persist the new order immediately
+        saveProjectsToDisk(projects)
     }
 }
 
