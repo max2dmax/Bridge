@@ -31,6 +31,7 @@ struct ProjectDetailView: View {
     @State private var useItalic = false
     @State private var selectedFontName: String = "System"
     @State private var currentLyrics: String = "" // Track displayed lyrics
+    @State private var showingMAXNETChat = false // MAXNET chat presentation state
 
     private let fonts = ["System","Helvetica Neue","Courier","Georgia","Avenir Next"]
 
@@ -162,12 +163,19 @@ struct ProjectDetailView: View {
 
                 Divider()
 
-                Button("Ask MAXNET for Help") {
-                    // hook in later…
+                Button(action: {
+                    showingMAXNETChat = true
+                }) {
+                    HStack {
+                        Image(systemName: "message")
+                            .font(.title2)
+                        Text("Ask MAXNET for Help")
+                            .fontWeight(.medium)
+                    }
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(dominantColor)
+                .background(.blue)
                 .foregroundColor(.white)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
 
@@ -290,6 +298,9 @@ struct ProjectDetailView: View {
         }
         .sheet(isPresented: $showingFilePicker) {
             DocumentPicker(selectedFiles: $additionalFiles)
+        }
+        .sheet(isPresented: $showingMAXNETChat) {
+            MAXNETChatView(project: project)
         }
         .onDisappear {
             // your archive-on-exit logic
