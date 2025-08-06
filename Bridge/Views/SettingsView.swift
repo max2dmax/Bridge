@@ -79,8 +79,22 @@ struct SettingsView: View {
                 }
                 
                 // Future settings can be added here as new sections
-                // Example placeholder for extensibility:
-                Section(header: Text("More Settings")) {
+                // Example: Add new sections like this for extensibility
+                // Section(header: Text("New Setting Category")) {
+                //     Toggle("Setting Name", isOn: $tempSetting)
+                //     Text("Description of the setting")
+                //         .font(.caption)
+                //         .foregroundColor(.secondary)
+                // }
+                //
+                // Don't forget to:
+                // 1. Add @Published property to AppPreferences
+                // 2. Update Codable implementation (CodingKeys, init, encode)
+                // 3. Add tempSetting @State variable
+                // 4. Initialize tempSetting in setupTempValues()
+                // 5. Save tempSetting in saveChanges()
+                
+                Section(header: Text("About")) {
                     Text("Additional preferences will appear here in future updates.")
                         .font(.caption)
                         .foregroundColor(.secondary)

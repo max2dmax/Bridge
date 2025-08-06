@@ -4,8 +4,9 @@
 //
 // This file contains the main ContentView for the Bridge app.
 // Shows the list of projects with navigation to music player and project details.
-// Now includes drag & drop reordering, username customization, and gradient picker.
-// Uses Persistence.swift for all disk operations and UserPreferences for user settings.
+// Features drag & drop reordering, customizable home title, and gradient backgrounds.
+// Uses @EnvironmentObject AppPreferences for global settings and includes a settings
+// toolbar button for easy access to preferences customization.
 //
 
 import SwiftUI

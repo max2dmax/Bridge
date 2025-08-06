@@ -59,6 +59,43 @@ struct BridgeTests {
         }
     }
 
+    @Test func testAppPreferencesBackwardsCompatibility() async throws {
+        // Test that AppPreferences can decode old UserPreferences JSON format
+        let oldUserPreferencesJSON = """
+        {
+            "username": "My Custom Home Title",
+            "gradientMode": "selected", 
+            "selectedProjectIds": ["12345678-1234-1234-1234-123456789012"],
+            "projectOrder": ["12345678-1234-1234-1234-123456789012"]
+        }
+        """.data(using: .utf8)!
+        
+        let decoder = JSONDecoder()
+        let appPreferences = try decoder.decode(AppPreferences.self, from: oldUserPreferencesJSON)
+        
+        #expect(appPreferences.homeTitle == "My Custom Home Title", "Home title should be decoded from old 'username' field")
+        #expect(appPreferences.gradientMode == .selected, "Gradient mode should be preserved")
+        #expect(appPreferences.selectedProjectIds.count == 1, "Selected project IDs should be preserved")
+        #expect(appPreferences.projectOrder.count == 1, "Project order should be preserved")
+    }
+    
+    @Test func testAppPreferencesEncodingUsesOldKeys() async throws {
+        // Test that AppPreferences encodes using old keys for backwards compatibility
+        let appPreferences = AppPreferences(
+            homeTitle: "Test Title",
+            gradientMode: .all,
+            selectedProjectIds: [],
+            projectOrder: []
+        )
+        
+        let encoder = JSONEncoder()
+        let data = try encoder.encode(appPreferences)
+        let jsonString = String(data: data, encoding: .utf8)!
+        
+        #expect(jsonString.contains("\"username\""), "Should encode homeTitle as 'username' for backwards compatibility")
+        #expect(jsonString.contains("Test Title"), "Should contain the home title value")
+    }
+
     @Test func example() async throws {
         // Write your test here and use APIs like `#expect(...)` to check expected conditions.
     }
