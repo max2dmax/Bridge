@@ -45,7 +45,7 @@ func dominantColors(from image: UIImage) -> [Color] {
 /// Generate gradient colors based on user preferences and available projects
 /// Supports both "All" mode (all projects) and "Selected" mode (specific projects)
 /// Provides backwards compatibility - falls back to "All" mode if no selection made
-func generateGradientColors(projects: [Project], preferences: UserPreferences) -> [Color] {
+func generateGradientColors(projects: [Project], preferences: AppPreferences) -> [Color] {
     let relevantProjects: [Project]
     
     switch preferences.gradientMode {
@@ -60,8 +60,8 @@ func generateGradientColors(projects: [Project], preferences: UserPreferences) -
         if relevantProjects.isEmpty {
             return generateGradientColors(
                 projects: projects, 
-                preferences: UserPreferences(
-                    username: preferences.username,
+                preferences: AppPreferences(
+                    homeTitle: preferences.homeTitle,
                     gradientMode: .all,
                     selectedProjectIds: [],
                     projectOrder: preferences.projectOrder

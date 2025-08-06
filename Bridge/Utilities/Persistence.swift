@@ -5,16 +5,16 @@ private let savedProjectsKey = "savedProjects"
 private let userPreferencesKey = "userPreferences"
 
 /// Save projects to UserDefaults. Only stores metadata and file paths, never lyrics content.
-/// Also maintains project order consistency with UserPreferences.
+/// Also maintains project order consistency with AppPreferences.
 func saveProjectsToDisk(_ projects: [Project]) {
     let encoder = JSONEncoder()
     if let encoded = try? encoder.encode(projects.map { $0.toCodable() }) {
         UserDefaults.standard.set(encoded, forKey: savedProjectsKey)
         
-        // Update project order in user preferences
-        var preferences = loadUserPreferences()
+        // Update project order in app preferences
+        let preferences = loadAppPreferences()
         preferences.projectOrder = projects.map { $0.id }
-        saveUserPreferences(preferences)
+        saveAppPreferences(preferences)
     }
 }
 
@@ -27,7 +27,7 @@ func loadProjectsFromDisk() -> [Project] {
     var projects = codableProjects.map { $0.toProject() }
     
     // Apply user-defined ordering if available
-    let preferences = loadUserPreferences()
+    let preferences = loadAppPreferences()
     if !preferences.projectOrder.isEmpty {
         projects = applyProjectOrdering(projects, order: preferences.projectOrder)
     }
@@ -109,31 +109,31 @@ func saveLyrics(_ lyrics: String, to project: Project) {
     }
 }
 
-// MARK: - UserPreferences Persistence
+// MARK: - AppPreferences Persistence
 
-/// Load user preferences from UserDefaults with safe migration support
+/// Load app preferences from UserDefaults with safe migration support
 /// Provides backwards compatibility - if no preferences exist, uses sensible defaults
-func loadUserPreferences() -> UserPreferences {
+func loadAppPreferences() -> AppPreferences {
     guard let data = UserDefaults.standard.data(forKey: userPreferencesKey) else {
         // First time user - return defaults which will provide backwards compatibility
-        return UserPreferences.default
+        return AppPreferences.default
     }
     
     let decoder = JSONDecoder()
     do {
-        let preferences = try decoder.decode(UserPreferences.self, from: data)
+        let preferences = try decoder.decode(AppPreferences.self, from: data)
         // Migrate any existing projects into the project order if not already done
-        return migrateUserPreferences(preferences)
+        return migrateAppPreferences(preferences)
     } catch {
-        print("Failed to decode user preferences (likely version upgrade), using defaults: \(error)")
-        return UserPreferences.default
+        print("Failed to decode app preferences (likely version upgrade), using defaults: \(error)")
+        return AppPreferences.default
     }
 }
 
-/// Migrate user preferences to ensure backwards compatibility
+/// Migrate app preferences to ensure backwards compatibility
 /// Ensures existing projects are included in project order
-private func migrateUserPreferences(_ preferences: UserPreferences) -> UserPreferences {
-    var migratedPreferences = preferences
+private func migrateAppPreferences(_ preferences: AppPreferences) -> AppPreferences {
+    let migratedPreferences = preferences
     
     // If project order is empty but we haven't migrated yet, populate order
     // Avoid infinite recursion by only calling this during migration
@@ -153,13 +153,25 @@ private func migrateUserPreferences(_ preferences: UserPreferences) -> UserPrefe
     return migratedPreferences
 }
 
-/// Save user preferences to UserDefaults
-func saveUserPreferences(_ preferences: UserPreferences) {
+/// Save app preferences to UserDefaults
+func saveAppPreferences(_ preferences: AppPreferences) {
     let encoder = JSONEncoder()
     do {
         let data = try encoder.encode(preferences)
         UserDefaults.standard.set(data, forKey: userPreferencesKey)
     } catch {
-        print("Failed to save user preferences: \(error)")
+        print("Failed to save app preferences: \(error)")
     }
+}
+
+// MARK: - Legacy Functions for Backwards Compatibility
+
+/// Legacy function for backwards compatibility - loads AppPreferences as UserPreferences
+func loadUserPreferences() -> UserPreferences {
+    return loadAppPreferences()
+}
+
+/// Legacy function for backwards compatibility - saves AppPreferences
+func saveUserPreferences(_ preferences: UserPreferences) {
+    saveAppPreferences(preferences)
 }
