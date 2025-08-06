@@ -1,3 +1,12 @@
+//
+// ProjectDetailView.swift
+// Bridge
+//
+// This file contains the ProjectDetailView for editing project details.
+// All lyrics editing reads/writes from .txt files using Persistence.swift functions.
+// Uses ImagePicker.swift and DocumentPicker.swift for file selection.
+//
+
 import SwiftUI
 import Foundation
 import UniformTypeIdentifiers
@@ -21,7 +30,7 @@ struct ProjectDetailView: View {
     @State private var useBold = false
     @State private var useItalic = false
     @State private var selectedFontName: String = "System"
-    @State private var currentLyrics: String = "" // <-- Add this
+    @State private var currentLyrics: String = "" // Track displayed lyrics
 
     private let fonts = ["System","Helvetica Neue","Courier","Georgia","Avenir Next"]
 
@@ -80,6 +89,9 @@ struct ProjectDetailView: View {
 
                 Button("Edit Working Title") {
                     editedTitle = project.title
+                    selectedFontName = project.fontName
+                    useBold = project.useBold
+                    useItalic = project.useItalic
                     showEditTitleAlert = true
                 }
                 .frame(maxWidth: .infinity)
@@ -115,8 +127,9 @@ struct ProjectDetailView: View {
                 // Lyrics edit
                 if project.files.contains(where: { $0.pathExtension.lowercased() == "txt" }) {
                     Button("Edit Lyrics") {
-                        currentLyrics = loadLyrics(from: project)
-                        newLyricsText = currentLyrics
+                        let lyrics = loadLyrics(from: project)
+                        newLyricsText = lyrics // Load current lyrics for editing
+                        currentLyrics = lyrics // Display current lyrics
                         showLyricsEditor = true
                     }
                     .frame(maxWidth: .infinity)
@@ -127,10 +140,9 @@ struct ProjectDetailView: View {
                 } else {
                     Button("Create Lyrics Document") {
                         ensureLyricsFile(for: &project)
+                        newLyricsText = "" // Start with blank for new file
                         currentLyrics = ""
-                        newLyricsText = ""
                         showLyricsEditor = true
-                        // Project updated, inform parent
                         onUpdate?(project)
                     }
                     .frame(maxWidth: .infinity)
@@ -200,7 +212,7 @@ struct ProjectDetailView: View {
                             if !project.files.contains(where: { $0.pathExtension.lowercased() == "txt" }) {
                                 ensureLyricsFile(for: &project)
                             }
-                            
+
                             // Archive old lyrics if they exist
                             let oldLyrics = loadLyrics(from: project)
                             if !oldLyrics.isEmpty {
@@ -209,10 +221,10 @@ struct ProjectDetailView: View {
                                     try? oldLyrics.write(to: archiveURL, atomically: true, encoding: .utf8)
                                 }
                             }
-                            
+
                             // Save new lyrics
                             saveLyrics(newLyricsText, to: project)
-                            currentLyrics = newLyricsText // <-- Update immediately!
+                            currentLyrics = newLyricsText // Update displayed lyrics immediately
                             onUpdate?(project)
                             showLyricsEditor = false
                         }
@@ -258,6 +270,9 @@ struct ProjectDetailView: View {
                     ToolbarItem(placement: .confirmationAction) {
                         Button("Save") {
                             project.title = editedTitle
+                            project.fontName = selectedFontName
+                            project.useBold = useBold
+                            project.useItalic = useItalic
                             onUpdate?(project)
                             showEditTitleAlert = false
                         }
@@ -282,7 +297,7 @@ struct ProjectDetailView: View {
         .onChange(of: project) { updatedProject in
             // Persist updated project back to disk
             onUpdate?(updatedProject)
-            currentLyrics = loadLyrics(from: updatedProject) // in case project changes outside
+            currentLyrics = loadLyrics(from: updatedProject)
         }
     }
 }

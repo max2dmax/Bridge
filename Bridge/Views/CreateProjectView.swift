@@ -17,6 +17,11 @@ struct CreateProjectView: View {
     @State private var showingImagePicker = false
     @State private var showingFilePicker = false
 
+    // Working title style defaults
+    @State private var selectedFontName: String = "System"
+    @State private var useBold: Bool = false
+    @State private var useItalic: Bool = false
+
     var onSave: (Project) -> Void
 
     var body: some View {
@@ -27,6 +32,18 @@ struct CreateProjectView: View {
                 }
 
                 Section(header: Text("Artwork")) {
+                    // --- Styled title preview above artwork ---
+                    if !title.isEmpty {
+                        Text(title)
+                            .font(selectedFontName == "System"
+                                ? .system(size: 28)
+                                : Font.custom(selectedFontName, size: 28))
+                            .fontWeight(useBold ? .bold : .regular)
+                            .italic(useItalic)
+                            .foregroundColor(.primary)
+                            .padding(8)
+                    }
+
                     if let img = selectedImage {
                         Image(uiImage: img)
                             .resizable()
@@ -47,13 +64,31 @@ struct CreateProjectView: View {
                         showingFilePicker = true
                     }
                 }
+
+                Section(header: Text("Working Title Style")) {
+                    Picker("Font", selection: $selectedFontName) {
+                        Text("System").tag("System")
+                        Text("Helvetica Neue").tag("Helvetica Neue")
+                        Text("Arial").tag("Arial")
+                        // Add more fonts as needed
+                    }
+                    Toggle("Bold", isOn: $useBold)
+                    Toggle("Italic", isOn: $useItalic)
+                }
             }
             .navigationTitle("New Song Project")
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
-                        // Create the project first
-                        var proj = Project(title: title, artwork: selectedImage, files: selectedFiles)
+                        // Create the project first, including style
+                        var proj = Project(
+                            title: title,
+                            artwork: selectedImage,
+                            files: selectedFiles,
+                            fontName: selectedFontName,
+                            useBold: useBold,
+                            useItalic: useItalic
+                        )
                         // Ensure the project has a lyrics file (and that it exists on disk!)
                         ensureLyricsFile(for: &proj)
                         onSave(proj)
