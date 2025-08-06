@@ -13,9 +13,11 @@ import UIKit
 
 
 struct ContentView: View {
-    // Core state for projects and user customizations
+    // Global app preferences injected via environment
+    @EnvironmentObject var appPreferences: AppPreferences
+    
+    // Core state for projects
     @State private var projects: [Project] = loadProjectsFromDisk()
-    @State private var userPreferences: UserPreferences = loadUserPreferences()
     
     // Sheet and navigation state
     @State private var showingCreateSheet = false
@@ -24,11 +26,11 @@ struct ContentView: View {
     @State private var selectedProject: Project?
     @State private var showingDetails = false
     @State private var isSplashActive = true
-    @State private var showingGradientPicker = false // New: gradient picker modal
+    @State private var showingSettings = false // New: settings modal via toolbar gear button
 
-    // Compute gradient colors based on user preferences (All vs Selected mode)
+    // Compute gradient colors based on app preferences (All vs Selected mode)
     private var backgroundGradientColors: [Color] {
-        return generateGradientColors(projects: projects, preferences: userPreferences)
+        return generateGradientColors(projects: projects, preferences: appPreferences)
     }
 
     // Determine if background is light for title contrast
@@ -128,20 +130,25 @@ struct ContentView: View {
                         }
                     }
                     .navigationTitle(
-                        Text(userPreferences.username)
+                        Text(appPreferences.homeTitle)
                             .font(.system(size: 26, weight: .heavy, design: .rounded))
                             .foregroundColor(isBackgroundLight ? .black : .white)
-                            .onLongPressGesture {
-                                // Long press on username opens gradient picker modal
-                                showingGradientPicker = true
-                            }
                     )
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button(action: {
+                                showingSettings = true
+                            }) {
+                                Image(systemName: "gearshape.fill")
+                                    .foregroundColor(isBackgroundLight ? .black : .white)
+                            }
+                        }
+                    }
                 }
                 .onAppear {
-                    // Load projects and user preferences from disk on appear
+                    // Load projects from disk on appear
                     // This ensures backwards compatibility with existing projects
                     projects = loadProjectsFromDisk()
-                    userPreferences = loadUserPreferences()
                     NotificationCenter.default.addObserver(forName: Notification.Name("ProjectListShouldRefresh"), object: nil, queue: .main) { _ in
                         projects = projects
                     }
@@ -177,16 +184,9 @@ struct ContentView: View {
                         }
                     }
                 }
-                .sheet(isPresented: $showingGradientPicker) {
-                    // Gradient picker modal for username editing and background customization
-                    GradientPickerView(
-                        preferences: $userPreferences,
-                        projects: projects,
-                        onSave: {
-                            // Save preferences when user confirms changes
-                            saveUserPreferences(userPreferences)
-                        }
-                    )
+                .sheet(isPresented: $showingSettings) {
+                    // Settings modal accessed via toolbar gear button
+                    SettingsView(projects: projects)
                 }
             }
         }
