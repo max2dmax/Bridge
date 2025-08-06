@@ -4,7 +4,8 @@
 //
 // This file contains the main ContentView for the Bridge app.
 // Shows the list of projects with navigation to music player and project details.
-// Uses Persistence.swift for all disk operations and ImagePicker.swift for image selection.
+// Now includes drag & drop reordering, username customization, and gradient picker.
+// Uses Persistence.swift for all disk operations and UserPreferences for user settings.
 //
 
 import SwiftUI
@@ -12,34 +13,33 @@ import UIKit
 
 
 struct ContentView: View {
+    // Core state for projects and user customizations
     @State private var projects: [Project] = loadProjectsFromDisk()
     @State private var userPreferences: UserPreferences = loadUserPreferences()
+    
+    // Sheet and navigation state
     @State private var showingCreateSheet = false
     @State private var showMusicPlayer = false
     @State private var selectedMP3Project: Project?
     @State private var selectedProject: Project?
     @State private var showingDetails = false
     @State private var isSplashActive = true
-    @State private var showingGradientPicker = false
+    @State private var showingGradientPicker = false // New: gradient picker modal
 
-    // Compute gradient colors based on user preferences
+    // Compute gradient colors based on user preferences (All vs Selected mode)
     private var backgroundGradientColors: [Color] {
         return generateGradientColors(projects: projects, preferences: userPreferences)
     }
 
     // Determine if background is light for title contrast
+    // Uses a simple heuristic based on whether we have projects with artworks
     private var isBackgroundLight: Bool {
-        // Use first color from gradient to determine contrast
-        let firstColor = backgroundGradientColors.first ?? Color.gray
-        if let uiColor = UIColor(firstColor) {
-            var white: CGFloat = 0
-            uiColor.getWhite(&white, alpha: nil)
-            return white > 0.7
-        }
-        return false
+        // If we have projects with artwork, assume darker background for better contrast
+        let hasArtwork = projects.contains { $0.artwork != nil }
+        return !hasArtwork // Light text on dark artwork-based backgrounds
     }
 
-    // Floating Action Button dominant color
+    // Floating Action Button uses primary gradient color
     private var dominantFABColor: Color {
         // Use the primary gradient color for FAB
         return backgroundGradientColors.first ?? .blue
@@ -132,13 +132,14 @@ struct ContentView: View {
                             .font(.system(size: 26, weight: .heavy, design: .rounded))
                             .foregroundColor(isBackgroundLight ? .black : .white)
                             .onLongPressGesture {
-                                // Long press on title opens gradient picker
+                                // Long press on username opens gradient picker modal
                                 showingGradientPicker = true
                             }
                     )
                 }
                 .onAppear {
-                    // Load from disk on appear and refresh user preferences
+                    // Load projects and user preferences from disk on appear
+                    // This ensures backwards compatibility with existing projects
                     projects = loadProjectsFromDisk()
                     userPreferences = loadUserPreferences()
                     NotificationCenter.default.addObserver(forName: Notification.Name("ProjectListShouldRefresh"), object: nil, queue: .main) { _ in
@@ -177,11 +178,12 @@ struct ContentView: View {
                     }
                 }
                 .sheet(isPresented: $showingGradientPicker) {
+                    // Gradient picker modal for username editing and background customization
                     GradientPickerView(
                         preferences: $userPreferences,
                         projects: projects,
                         onSave: {
-                            // Save preferences and refresh view
+                            // Save preferences when user confirms changes
                             saveUserPreferences(userPreferences)
                         }
                     )
@@ -191,9 +193,10 @@ struct ContentView: View {
     }
     
     /// Handle drag & drop reordering of projects
+    /// Immediately persists the new order to maintain consistency
     private func moveProjects(from source: IndexSet, to destination: Int) {
         projects.move(fromOffsets: source, toOffset: destination)
-        // Persist the new order immediately
+        // Persist the new order immediately to UserDefaults
         saveProjectsToDisk(projects)
     }
 }

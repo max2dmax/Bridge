@@ -44,6 +44,7 @@ func dominantColors(from image: UIImage) -> [Color] {
 
 /// Generate gradient colors based on user preferences and available projects
 /// Supports both "All" mode (all projects) and "Selected" mode (specific projects)
+/// Provides backwards compatibility - falls back to "All" mode if no selection made
 func generateGradientColors(projects: [Project], preferences: UserPreferences) -> [Color] {
     let relevantProjects: [Project]
     
@@ -54,17 +55,30 @@ func generateGradientColors(projects: [Project], preferences: UserPreferences) -
         // Filter projects by selected IDs
         let selectedIds = Set(preferences.selectedProjectIds)
         relevantProjects = projects.filter { selectedIds.contains($0.id) }
+        
+        // Fallback to all projects if no selection made (backwards compatibility)
+        if relevantProjects.isEmpty {
+            return generateGradientColors(
+                projects: projects, 
+                preferences: UserPreferences(
+                    username: preferences.username,
+                    gradientMode: .all,
+                    selectedProjectIds: [],
+                    projectOrder: preferences.projectOrder
+                )
+            )
+        }
     }
     
     // Get all artworks from relevant projects
     let artworks = relevantProjects.compactMap { $0.artwork }
     
-    // If no artworks available, return default gradient
+    // If no artworks available, return default gradient (backwards compatibility)
     guard !artworks.isEmpty else {
         return [Color.gray.opacity(0.2), Color.black.opacity(0.3)]
     }
     
-    // For multiple artworks, blend the dominant colors
+    // For single artwork, use existing dominantColors function
     if artworks.count == 1 {
         return dominantColors(from: artworks[0])
     } else {

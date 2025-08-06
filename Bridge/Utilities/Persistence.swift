@@ -112,18 +112,45 @@ func saveLyrics(_ lyrics: String, to project: Project) {
 // MARK: - UserPreferences Persistence
 
 /// Load user preferences from UserDefaults with safe migration support
+/// Provides backwards compatibility - if no preferences exist, uses sensible defaults
 func loadUserPreferences() -> UserPreferences {
     guard let data = UserDefaults.standard.data(forKey: userPreferencesKey) else {
+        // First time user - return defaults which will provide backwards compatibility
         return UserPreferences.default
     }
     
     let decoder = JSONDecoder()
     do {
-        return try decoder.decode(UserPreferences.self, from: data)
+        let preferences = try decoder.decode(UserPreferences.self, from: data)
+        // Migrate any existing projects into the project order if not already done
+        return migrateUserPreferences(preferences)
     } catch {
-        print("Failed to decode user preferences, using defaults: \(error)")
+        print("Failed to decode user preferences (likely version upgrade), using defaults: \(error)")
         return UserPreferences.default
     }
+}
+
+/// Migrate user preferences to ensure backwards compatibility
+/// Ensures existing projects are included in project order
+private func migrateUserPreferences(_ preferences: UserPreferences) -> UserPreferences {
+    var migratedPreferences = preferences
+    
+    // If project order is empty but we haven't migrated yet, populate order
+    // Avoid infinite recursion by only calling this during migration
+    if migratedPreferences.projectOrder.isEmpty {
+        // Get existing projects without triggering another migration
+        guard let data = UserDefaults.standard.data(forKey: savedProjectsKey) else {
+            return migratedPreferences
+        }
+        let decoder = JSONDecoder()
+        guard let codableProjects = try? decoder.decode([CodableProject].self, from: data) else {
+            return migratedPreferences
+        }
+        let projects = codableProjects.map { $0.toProject() }
+        migratedPreferences.projectOrder = projects.map { $0.id }
+    }
+    
+    return migratedPreferences
 }
 
 /// Save user preferences to UserDefaults
