@@ -12,22 +12,20 @@
 import SwiftUI
 import UIKit
 
-
 struct ContentView: View {
     // Global app preferences injected via environment
     @EnvironmentObject var appPreferences: AppPreferences
-    
+
     // Core state for projects
     @State private var projects: [Project] = loadProjectsFromDisk()
-    
+
     // Sheet and navigation state
     @State private var showingCreateSheet = false
     @State private var showMusicPlayer = false
     @State private var selectedMP3Project: Project?
-    @State private var selectedProject: Project?
-    @State private var showingDetails = false
+    @State private var selectedProject: Project?     // <-- Use this as sheet trigger
     @State private var isSplashActive = true
-    @State private var showingSettings = false // New: settings modal via toolbar gear button
+    @State private var showingSettings = false // Settings modal via toolbar gear button
 
     // Compute gradient colors based on app preferences (All vs Selected mode)
     private var backgroundGradientColors: [Color] {
@@ -84,10 +82,8 @@ struct ContentView: View {
                                     .contentShape(Rectangle())
                                     .swipeActions(edge: .trailing) {
                                         Button("Project Contents") {
-                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                                selectedProject = project
-                                                showingDetails = true
-                                            }
+                                            // Set selectedProject; sheet will present automatically
+                                            selectedProject = project
                                         }
                                         .tint(.blue)
                                     }
@@ -161,28 +157,19 @@ struct ContentView: View {
                         projects = projects // Trigger view update
                     }
                 }
-                .sheet(isPresented: $showingDetails, onDismiss: {
+                // Use .sheet(item:) to bind showing to selectedProject
+                .sheet(item: $selectedProject, onDismiss: {
                     selectedProject = nil
-                }) {
-                    Group {
-                        if let project = selectedProject {
-                            NavigationStack {
-                                ProjectDetailView(project: project, onUpdate: { updated in
-                                    if let index = projects.firstIndex(where: { $0.id == updated.id }) {
-                                        projects[index] = updated
-                                    } else {
-                                        projects.append(updated)
-                                    }
-                                    saveProjectsToDisk(projects)
-                                })
+                }) { project in
+                    NavigationStack {
+                        ProjectDetailView(project: project, onUpdate: { updated in
+                            if let index = projects.firstIndex(where: { $0.id == updated.id }) {
+                                projects[index] = updated
+                            } else {
+                                projects.append(updated)
                             }
-                        } else {
-                            NavigationStack {
-                                Text("Failed to load project.")
-                                    .font(.title)
-                                    .padding()
-                            }
-                        }
+                            saveProjectsToDisk(projects)
+                        })
                     }
                 }
                 .sheet(isPresented: $showingSettings) {
@@ -192,7 +179,7 @@ struct ContentView: View {
             }
         }
     }
-    
+
     /// Handle drag & drop reordering of projects
     /// Immediately persists the new order to maintain consistency
     private func moveProjects(from source: IndexSet, to destination: Int) {
@@ -201,9 +188,3 @@ struct ContentView: View {
         saveProjectsToDisk(projects)
     }
 }
-
-#Preview {
-    ContentView()
-}
-
-
