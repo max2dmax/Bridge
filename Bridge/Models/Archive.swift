@@ -133,4 +133,38 @@ struct ProjectArchive: Codable {
             }
         }
     }
+    
+    /// Remove entries older than the specified number of days (optional cleanup)
+    mutating func removeEntriesOlderThan(days: Int, deleteFiles: Bool = true) {
+        let cutoffDate = Calendar.current.date(byAdding: .day, value: -days, to: Date()) ?? Date.distantPast
+        let entriesToRemove = entries.filter { $0.timestamp < cutoffDate }
+        
+        for entry in entriesToRemove {
+            if deleteFiles, let fileURL = entry.fileURL {
+                try? FileManager.default.removeItem(at: fileURL)
+            }
+        }
+        
+        entries.removeAll { $0.timestamp < cutoffDate }
+    }
+    
+    /// Get total file size of all archive entries
+    var totalArchiveSize: Int64 {
+        var totalSize: Int64 = 0
+        for entry in entries {
+            if let fileURL = entry.fileURL,
+               let attributes = try? FileManager.default.attributesOfItem(atPath: fileURL.path),
+               let fileSize = attributes[.size] as? Int64 {
+                totalSize += fileSize
+            }
+        }
+        return totalSize
+    }
+    
+    /// Get formatted string representation of archive size
+    var formattedArchiveSize: String {
+        let formatter = ByteCountFormatter()
+        formatter.countStyle = .file
+        return formatter.string(fromByteCount: totalArchiveSize)
+    }
 }

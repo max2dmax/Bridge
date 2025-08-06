@@ -6,6 +6,16 @@
 // All lyrics editing reads/writes from .txt files using Persistence.swift functions.
 // Uses ImagePicker.swift and DocumentPicker.swift for file selection.
 //
+// NEW ARCHIVE & DOWNLOAD FEATURES:
+// - Automatic archiving of lyrics, audio, and artwork when changed
+// - MAXNET conversation archiving on chat completion
+// - Archive viewing and sharing capabilities
+// - Project export as zip files with iOS Files app compatibility
+// - Archive management with size tracking and cleanup options
+//
+// Archive files are stored in Documents/Archives/{projectId}/
+// Export files are temporarily created and then moved to Documents for sharing
+//
 
 import SwiftUI
 import Foundation
@@ -14,6 +24,7 @@ import Compression
 import PhotosUI
 import AVFoundation
 import ZIPFoundation
+import UIKit
 
 struct ProjectDetailView: View {
     @State var project: Project
@@ -40,6 +51,8 @@ struct ProjectDetailView: View {
     @State private var exportError: String?
     @State private var showShareSheet = false
     @State private var shareURL: URL?
+    @State private var showingArchiveSuccess = false
+    @State private var archiveMessage = ""
 
     private let fonts = ["System","Helvetica Neue","Courier","Georgia","Avenir Next"]
 
@@ -218,10 +231,22 @@ struct ProjectDetailView: View {
                             .foregroundColor(.gray)
                             .padding(.vertical, 8)
                     } else {
-                        ForEach(project.archive.entries) { entry in
-                            ArchiveEntryRow(entry: entry) {
-                                selectedArchiveEntry = entry
-                                showingArchiveDetail = true
+                        VStack(alignment: .leading, spacing: 8) {
+                            // Archive summary
+                            HStack {
+                                Text("Total: \(project.archive.formattedArchiveSize)")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                Spacer()
+                            }
+                            .padding(.horizontal)
+                            
+                            // Archive entries
+                            ForEach(project.archive.entries) { entry in
+                                ArchiveEntryRow(entry: entry) {
+                                    selectedArchiveEntry = entry
+                                    showingArchiveDetail = true
+                                }
                             }
                         }
                     }
@@ -257,7 +282,10 @@ struct ProjectDetailView: View {
                             }
 
                             // Archive old lyrics using proper archiving function
-                            let _ = archiveLyrics(for: &project)
+                            if archiveLyrics(for: &project) {
+                                archiveMessage = "Previous lyrics archived successfully"
+                                showingArchiveSuccess = true
+                            }
 
                             // Save new lyrics
                             saveLyrics(newLyricsText, to: project)
@@ -334,13 +362,18 @@ struct ProjectDetailView: View {
                 if let archiveEntry = archiveMAXNETConversation(messages, for: project.id) {
                     project.archive.addEntry(archiveEntry)
                     onUpdate?(project)
+                    archiveMessage = "MAXNET conversation archived successfully"
+                    showingArchiveSuccess = true
                 }
             }
         }
         .onChange(of: updatedArtwork) { newArtwork in
             if let newArtwork = newArtwork {
                 // Archive old artwork before updating
-                let _ = archiveArtwork(for: &project)
+                if archiveArtwork(for: &project) {
+                    archiveMessage = "Previous artwork archived successfully"
+                    showingArchiveSuccess = true
+                }
                 project.artwork = newArtwork
                 onUpdate?(project)
             }
@@ -350,7 +383,10 @@ struct ProjectDetailView: View {
                 let mp3Files = newFiles.filter { $0.pathExtension.lowercased() == "mp3" }
                 if !mp3Files.isEmpty {
                     // Archive old audio before updating
-                    let _ = archiveAudio(for: &project)
+                    if archiveAudio(for: &project) {
+                        archiveMessage = "Previous audio archived successfully"
+                        showingArchiveSuccess = true
+                    }
                 }
                 project.files.append(contentsOf: newFiles)
                 additionalFiles.removeAll() // Clear the array to avoid re-adding
@@ -368,6 +404,11 @@ struct ProjectDetailView: View {
             }
         } message: {
             Text(exportError ?? "")
+        }
+        .alert("Archive Success", isPresented: $showingArchiveSuccess) {
+            Button("OK") {}
+        } message: {
+            Text(archiveMessage)
         }
         .sheet(isPresented: $showingArchiveDetail) {
             if let entry = selectedArchiveEntry {
@@ -415,29 +456,32 @@ struct ArchiveEntryRow: View {
     var body: some View {
         Button(action: onTap) {
             HStack {
-                Image(systemName: entry.entryType == .lyrics ? "doc.text" : 
-                      entry.entryType == .audio ? "waveform" :
-                      entry.entryType == .artwork ? "photo" : "message")
-                    .foregroundColor(.blue)
+                // Icon based on entry type
+                Image(systemName: entryIcon)
+                    .foregroundColor(entryColor)
                     .frame(width: 20)
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(entry.label)
                         .font(.body)
                         .foregroundColor(.primary)
+                        .lineLimit(2)
                     
-                    Text(DateFormatter.archiveDateFormatter.string(from: entry.timestamp))
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                    HStack {
+                        Text(DateFormatter.archiveDateFormatter.string(from: entry.timestamp))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        if !entry.fileExists {
+                            Spacer()
+                            Label("Missing", systemImage: "exclamationmark.triangle")
+                                .font(.caption)
+                                .foregroundColor(.orange)
+                        }
+                    }
                 }
                 
                 Spacer()
-                
-                if !entry.fileExists {
-                    Image(systemName: "exclamationmark.triangle")
-                        .foregroundColor(.orange)
-                        .font(.caption)
-                }
                 
                 Image(systemName: "chevron.right")
                     .foregroundColor(.gray)
@@ -446,6 +490,24 @@ struct ArchiveEntryRow: View {
             .padding(.vertical, 8)
         }
         .buttonStyle(.plain)
+    }
+    
+    private var entryIcon: String {
+        switch entry.entryType {
+        case .lyrics: return "doc.text"
+        case .audio: return "waveform"
+        case .artwork: return "photo"
+        case .maxnetConversation: return "message"
+        }
+    }
+    
+    private var entryColor: Color {
+        switch entry.entryType {
+        case .lyrics: return .blue
+        case .audio: return .green
+        case .artwork: return .purple
+        case .maxnetConversation: return .orange
+        }
     }
 }
 
