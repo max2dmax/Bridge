@@ -32,6 +32,14 @@ struct ProjectDetailView: View {
     @State private var selectedFontName: String = "System"
     @State private var currentLyrics: String = "" // Track displayed lyrics
     @State private var showingMAXNETChat = false // MAXNET chat presentation state
+    
+    // Archive and export state
+    @State private var showingArchiveDetail = false
+    @State private var selectedArchiveEntry: ArchiveEntry?
+    @State private var isExporting = false
+    @State private var exportError: String?
+    @State private var showShareSheet = false
+    @State private var shareURL: URL?
 
     private let fonts = ["System","Helvetica Neue","Courier","Georgia","Avenir Next"]
 
@@ -179,19 +187,46 @@ struct ProjectDetailView: View {
                 .foregroundColor(.white)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
 
-                DisclosureGroup("Archived Material") {
-                    // …you know the drill
-                }
-                .padding(.vertical)
+                Divider()
 
-                Button("Download Project Files") {
-                    // …zip & share logic
+                // Download Project Files Button
+                Button(action: exportProject) {
+                    HStack {
+                        if isExporting {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                                .padding(.trailing, 4)
+                        } else {
+                            Image(systemName: "square.and.arrow.down")
+                                .font(.title2)
+                        }
+                        Text(isExporting ? "Exporting..." : "Download Project Files")
+                            .fontWeight(.medium)
+                    }
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color.blue)
+                .background(Color.green)
                 .foregroundColor(.white)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
+                .disabled(isExporting)
+
+                // Archived Material - moved to bottom
+                DisclosureGroup("Archived Material (\(project.archive.entries.count))") {
+                    if project.archive.entries.isEmpty {
+                        Text("No archived items yet")
+                            .foregroundColor(.gray)
+                            .padding(.vertical, 8)
+                    } else {
+                        ForEach(project.archive.entries) { entry in
+                            ArchiveEntryRow(entry: entry) {
+                                selectedArchiveEntry = entry
+                                showingArchiveDetail = true
+                            }
+                        }
+                    }
+                }
+                .padding(.vertical)
             }
             .padding()
         }
@@ -221,14 +256,8 @@ struct ProjectDetailView: View {
                                 ensureLyricsFile(for: &project)
                             }
 
-                            // Archive old lyrics if they exist
-                            let oldLyrics = loadLyrics(from: project)
-                            if !oldLyrics.isEmpty {
-                                if let documentsDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
-                                    let archiveURL = documentsDir.appendingPathComponent("Archived_Lyrics_\(UUID().uuidString.prefix(6)).txt")
-                                    try? oldLyrics.write(to: archiveURL, atomically: true, encoding: .utf8)
-                                }
-                            }
+                            // Archive old lyrics using proper archiving function
+                            let _ = archiveLyrics(for: &project)
 
                             // Save new lyrics
                             saveLyrics(newLyricsText, to: project)
@@ -300,15 +329,262 @@ struct ProjectDetailView: View {
             DocumentPicker(selectedFiles: $additionalFiles)
         }
         .sheet(isPresented: $showingMAXNETChat) {
-            MAXNETChatView(project: project)
+            MAXNETChatView(project: project) { messages in
+                // Archive the MAXNET conversation
+                if let archiveEntry = archiveMAXNETConversation(messages, for: project.id) {
+                    project.archive.addEntry(archiveEntry)
+                    onUpdate?(project)
+                }
+            }
         }
-        .onDisappear {
-            // your archive-on-exit logic
+        .onChange(of: updatedArtwork) { newArtwork in
+            if let newArtwork = newArtwork {
+                // Archive old artwork before updating
+                let _ = archiveArtwork(for: &project)
+                project.artwork = newArtwork
+                onUpdate?(project)
+            }
+        }
+        .onChange(of: additionalFiles) { newFiles in
+            if !newFiles.isEmpty {
+                let mp3Files = newFiles.filter { $0.pathExtension.lowercased() == "mp3" }
+                if !mp3Files.isEmpty {
+                    // Archive old audio before updating
+                    let _ = archiveAudio(for: &project)
+                }
+                project.files.append(contentsOf: newFiles)
+                additionalFiles.removeAll() // Clear the array to avoid re-adding
+                onUpdate?(project)
+            }
         }
         .onChange(of: project) { updatedProject in
             // Persist updated project back to disk
             onUpdate?(updatedProject)
             currentLyrics = loadLyrics(from: updatedProject)
         }
+        .alert("Export Error", isPresented: .constant(exportError != nil)) {
+            Button("OK") {
+                exportError = nil
+            }
+        } message: {
+            Text(exportError ?? "")
+        }
+        .sheet(isPresented: $showingArchiveDetail) {
+            if let entry = selectedArchiveEntry {
+                ArchiveDetailView(entry: entry)
+            }
+        }
+        .sheet(isPresented: $showShareSheet) {
+            if let shareURL = shareURL {
+                ActivityViewController(activityItems: [shareURL])
+            }
+        }
     }
+    
+    // MARK: - Helper Functions
+    
+    /// Export the project as a zip file and present share sheet
+    private func exportProject() {
+        isExporting = true
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            if let exportURL = ProjectExporter.exportProject(project) {
+                DispatchQueue.main.async {
+                    self.shareURL = exportURL
+                    self.showShareSheet = true
+                    self.isExporting = false
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self.exportError = "Failed to export project files. Please try again."
+                    self.isExporting = false
+                }
+            }
+        }
+    }
+    }
+}
+
+// MARK: - Archive Entry Row
+
+/// Row view for displaying a single archive entry
+struct ArchiveEntryRow: View {
+    let entry: ArchiveEntry
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
+            HStack {
+                Image(systemName: entry.entryType == .lyrics ? "doc.text" : 
+                      entry.entryType == .audio ? "waveform" :
+                      entry.entryType == .artwork ? "photo" : "message")
+                    .foregroundColor(.blue)
+                    .frame(width: 20)
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(entry.label)
+                        .font(.body)
+                        .foregroundColor(.primary)
+                    
+                    Text(DateFormatter.archiveDateFormatter.string(from: entry.timestamp))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
+                Spacer()
+                
+                if !entry.fileExists {
+                    Image(systemName: "exclamationmark.triangle")
+                        .foregroundColor(.orange)
+                        .font(.caption)
+                }
+                
+                Image(systemName: "chevron.right")
+                    .foregroundColor(.gray)
+                    .font(.caption)
+            }
+            .padding(.vertical, 8)
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+// MARK: - Archive Detail View
+
+/// Detail view for viewing/downloading archive entries
+struct ArchiveDetailView: View {
+    @Environment(\.dismiss) private var dismiss
+    let entry: ArchiveEntry
+    @State private var fileContent: String = ""
+    @State private var isLoading = true
+    @State private var showShareSheet = false
+    
+    var body: some View {
+        NavigationStack {
+            VStack(alignment: .leading, spacing: 16) {
+                // Entry Info
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(entry.label)
+                        .font(.headline)
+                    
+                    Label(DateFormatter.archiveDateFormatter.string(from: entry.timestamp), systemImage: "clock")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
+                    Label(entry.entryType.displayName, systemImage: entry.entryType == .lyrics ? "doc.text" : 
+                          entry.entryType == .audio ? "waveform" :
+                          entry.entryType == .artwork ? "photo" : "message")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
+                Divider()
+                
+                // Content
+                if isLoading {
+                    ProgressView("Loading...")
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else if entry.entryType == .lyrics || entry.entryType == .maxnetConversation {
+                    ScrollView {
+                        Text(fileContent)
+                            .font(.system(.body, design: .monospaced))
+                            .padding()
+                            .background(.ultraThinMaterial)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
+                } else if entry.entryType == .artwork, 
+                          let imageData = try? Data(contentsOf: entry.fileURL!),
+                          let image = UIImage(data: imageData) {
+                    Image(uiImage: image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                } else if entry.entryType == .audio, let audioURL = entry.fileURL {
+                    AudioPlayerView(url: audioURL)
+                } else {
+                    Text("Unable to preview this file")
+                        .foregroundColor(.gray)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+                
+                Spacer()
+            }
+            .padding()
+            .navigationTitle("Archive Item")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+                
+                ToolbarItem(placement: .primaryAction) {
+                    Button(action: shareFile) {
+                        Image(systemName: "square.and.arrow.up")
+                    }
+                    .disabled(!entry.fileExists)
+                }
+            }
+        }
+        .onAppear {
+            loadFileContent()
+        }
+        .sheet(isPresented: $showShareSheet) {
+            if let fileURL = entry.fileURL {
+                ActivityViewController(activityItems: [fileURL])
+            }
+        }
+    }
+    
+    private func loadFileContent() {
+        guard let fileURL = entry.fileURL,
+              entry.entryType == .lyrics || entry.entryType == .maxnetConversation else {
+            isLoading = false
+            return
+        }
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            do {
+                let content = try String(contentsOf: fileURL, encoding: .utf8)
+                DispatchQueue.main.async {
+                    self.fileContent = content
+                    self.isLoading = false
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.fileContent = "Error loading file: \(error.localizedDescription)"
+                    self.isLoading = false
+                }
+            }
+        }
+    }
+    
+    private func shareFile() {
+        showShareSheet = true
+    }
+}
+
+// MARK: - Activity View Controller
+
+/// UIActivityViewController wrapper for sharing files
+struct ActivityViewController: UIViewControllerRepresentable {
+    let activityItems: [Any]
+    
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        return UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
+    }
+    
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+}
+
+// MARK: - DateFormatter Extension
+
+extension DateFormatter {
+    static let archiveDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
+        return formatter
+    }()
 }

@@ -18,6 +18,7 @@ struct Project: Identifiable, Equatable, Hashable {
     var fontName: String = "System"
     var useBold: Bool = false
     var useItalic: Bool = false
+    var archive: ProjectArchive = ProjectArchive() // Archive for this project
 }
 //  Project.swift
 //  Bridge

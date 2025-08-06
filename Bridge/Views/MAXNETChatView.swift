@@ -21,15 +21,17 @@ struct MAXNETChatView: View {
     @State private var isLoading = false
     @State private var errorMessage: String?
     
-    // MARK: - Project Context (for future enhancement)
+    // MARK: - Project Context and Callbacks
     let project: Project?
+    let onArchiveConversation: (([OpenAIService.ChatMessage]) -> Void)?
     
     // MARK: - System Prompt
     private let systemPrompt = "You are MAXNET, a friendly assistant helping musicians and creators with their projects. You're knowledgeable about music production, songwriting, creative processes, and technical aspects of music creation. Be helpful, encouraging, and concise in your responses."
     
     // MARK: - Initializer
-    init(project: Project? = nil) {
+    init(project: Project? = nil, onArchiveConversation: (([OpenAIService.ChatMessage]) -> Void)? = nil) {
         self.project = project
+        self.onArchiveConversation = onArchiveConversation
     }
     
     var body: some View {
@@ -77,6 +79,11 @@ struct MAXNETChatView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Done") {
+                        // Archive conversation if there are meaningful messages
+                        let userMessages = messages.filter { $0.role == "user" || $0.role == "assistant" }
+                        if !userMessages.isEmpty {
+                            onArchiveConversation?(messages)
+                        }
                         dismiss()
                     }
                 }

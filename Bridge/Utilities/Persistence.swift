@@ -175,3 +175,178 @@ func loadUserPreferences() -> UserPreferences {
 func saveUserPreferences(_ preferences: UserPreferences) {
     saveAppPreferences(preferences)
 }
+
+// MARK: - Archive Functions
+
+/// Archive the current lyrics content before updating
+/// - Parameters:
+///   - project: The project whose lyrics will be archived
+/// - Returns: True if archiving was successful, false otherwise
+func archiveLyrics(for project: inout Project) -> Bool {
+    let currentLyrics = loadLyrics(from: project)
+    
+    // Don't archive empty lyrics
+    guard !currentLyrics.isEmpty else { return true }
+    
+    guard let archiveDir = ProjectArchive.archiveDirectory(for: project.id) else {
+        print("Failed to create archive directory for project")
+        return false
+    }
+    
+    // Create timestamped archive file
+    let timestamp = Date()
+    let formatter = DateFormatter()
+    formatter.dateFormat = "yyyy-MM-dd_HH-mm-ss"
+    let fileName = "lyrics_\(formatter.string(from: timestamp)).txt"
+    let archiveURL = archiveDir.appendingPathComponent(fileName)
+    
+    do {
+        try currentLyrics.write(to: archiveURL, atomically: true, encoding: .utf8)
+        
+        // Create archive entry
+        let entry = ArchiveEntry(type: .lyrics, filePath: archiveURL.path)
+        project.archive.addEntry(entry)
+        
+        print("Successfully archived lyrics to: \(archiveURL.path)")
+        return true
+    } catch {
+        print("Failed to archive lyrics: \(error)")
+        return false
+    }
+}
+
+/// Archive the current audio file before updating
+/// - Parameters:
+///   - project: The project whose audio will be archived
+/// - Returns: True if archiving was successful, false otherwise
+func archiveAudio(for project: inout Project) -> Bool {
+    // Find current audio file
+    guard let currentAudioURL = project.files.first(where: { $0.pathExtension.lowercased() == "mp3" }) else {
+        return true // No audio to archive
+    }
+    
+    guard let archiveDir = ProjectArchive.archiveDirectory(for: project.id) else {
+        print("Failed to create archive directory for project")
+        return false
+    }
+    
+    // Create timestamped archive file
+    let timestamp = Date()
+    let formatter = DateFormatter()
+    formatter.dateFormat = "yyyy-MM-dd_HH-mm-ss"
+    let fileName = "audio_\(formatter.string(from: timestamp)).mp3"
+    let archiveURL = archiveDir.appendingPathComponent(fileName)
+    
+    do {
+        try FileManager.default.copyItem(at: currentAudioURL, to: archiveURL)
+        
+        // Create archive entry
+        let entry = ArchiveEntry(type: .audio, filePath: archiveURL.path)
+        project.archive.addEntry(entry)
+        
+        print("Successfully archived audio to: \(archiveURL.path)")
+        return true
+    } catch {
+        print("Failed to archive audio: \(error)")
+        return false
+    }
+}
+
+/// Archive the current artwork before updating
+/// - Parameters:
+///   - project: The project whose artwork will be archived
+/// - Returns: True if archiving was successful, false otherwise
+func archiveArtwork(for project: inout Project) -> Bool {
+    guard let currentArtwork = project.artwork else {
+        return true // No artwork to archive
+    }
+    
+    guard let archiveDir = ProjectArchive.archiveDirectory(for: project.id) else {
+        print("Failed to create archive directory for project")
+        return false
+    }
+    
+    // Create timestamped archive file
+    let timestamp = Date()
+    let formatter = DateFormatter()
+    formatter.dateFormat = "yyyy-MM-dd_HH-mm-ss"
+    let fileName = "artwork_\(formatter.string(from: timestamp)).png"
+    let archiveURL = archiveDir.appendingPathComponent(fileName)
+    
+    do {
+        guard let pngData = currentArtwork.pngData() else {
+            print("Failed to convert artwork to PNG data")
+            return false
+        }
+        
+        try pngData.write(to: archiveURL)
+        
+        // Create archive entry
+        let entry = ArchiveEntry(type: .artwork, filePath: archiveURL.path)
+        project.archive.addEntry(entry)
+        
+        print("Successfully archived artwork to: \(archiveURL.path)")
+        return true
+    } catch {
+        print("Failed to archive artwork: \(error)")
+        return false
+    }
+}
+
+/// Archive a MAXNET conversation
+/// - Parameters:
+///   - conversation: The conversation messages to archive  
+///   - projectId: The ID of the project this conversation belongs to
+/// - Returns: Archive entry if successful, nil otherwise
+func archiveMAXNETConversation<T: MAXNETMessage>(_ messages: [T], for projectId: UUID) -> ArchiveEntry? {
+    guard let archiveDir = ProjectArchive.archiveDirectory(for: projectId) else {
+        print("Failed to create archive directory for project")
+        return nil
+    }
+    
+    // Create timestamped archive file
+    let timestamp = Date()
+    let formatter = DateFormatter()
+    formatter.dateFormat = "yyyy-MM-dd_HH-mm-ss"
+    let fileName = "maxnet_chat_\(formatter.string(from: timestamp)).txt"
+    let archiveURL = archiveDir.appendingPathComponent(fileName)
+    
+    // Format conversation for text file
+    let conversationText = formatConversationForArchive(messages)
+    
+    do {
+        try conversationText.write(to: archiveURL, atomically: true, encoding: .utf8)
+        
+        // Create archive entry
+        let entry = ArchiveEntry(type: .maxnetConversation, filePath: archiveURL.path)
+        
+        print("Successfully archived MAXNET conversation to: \(archiveURL.path)")
+        return entry
+    } catch {
+        print("Failed to archive MAXNET conversation: \(error)")
+        return nil
+    }
+}
+
+/// Protocol for archivable chat messages
+protocol MAXNETMessage {
+    var role: String { get }
+    var content: String { get }
+}
+
+/// Format chat messages into readable text format for archiving
+private func formatConversationForArchive<T: MAXNETMessage>(_ messages: [T]) -> String {
+    let formatter = DateFormatter()
+    formatter.dateStyle = .medium
+    formatter.timeStyle = .short
+    
+    var conversationText = "MAXNET Conversation - \(formatter.string(from: Date()))\n"
+    conversationText += "=" + String(repeating: "=", count: 50) + "\n\n"
+    
+    for message in messages.filter({ $0.role != "system" }) {
+        let speaker = message.role == "user" ? "You" : "MAXNET"
+        conversationText += "\(speaker):\n\(message.content)\n\n"
+    }
+    
+    return conversationText
+}
