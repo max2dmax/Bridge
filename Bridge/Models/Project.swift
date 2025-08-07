@@ -1,12 +1,3 @@
-//
-// Project.swift
-// Bridge
-//
-// This file contains the Project model representing a music project.
-// Projects always have a lyrics .txt file in their files array.
-// Use Persistence.swift functions for creating/loading/saving projects.
-//
-
 import Foundation
 import UIKit
 
@@ -19,10 +10,27 @@ struct Project: Identifiable, Equatable, Hashable {
     var useBold: Bool = false
     var useItalic: Bool = false
     var archive: ProjectArchive = ProjectArchive() // Archive for this project
-}
-//  Project.swift
-//  Bridge
-//
-//  Created by Max stevenson on 8/5/25.
-//
 
+    // MARK: - Equatable
+    static func == (lhs: Project, rhs: Project) -> Bool {
+        // Don't compare artwork (UIImage) as it's not Equatable
+        return lhs.id == rhs.id &&
+            lhs.title == rhs.title &&
+            lhs.files == rhs.files &&
+            lhs.fontName == rhs.fontName &&
+            lhs.useBold == rhs.useBold &&
+            lhs.useItalic == rhs.useItalic
+            // Don't compare .archive unless ProjectArchive is Equatable
+    }
+
+    // MARK: - Hashable
+    func hash(into hasher: inout Hasher) {
+        // Don't include artwork or archive in hash as UIImage and ProjectArchive may not be Hashable
+        hasher.combine(id)
+        hasher.combine(title)
+        hasher.combine(files)
+        hasher.combine(fontName)
+        hasher.combine(useBold)
+        hasher.combine(useItalic)
+    }
+}

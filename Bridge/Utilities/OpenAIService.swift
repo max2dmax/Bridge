@@ -21,7 +21,7 @@ class OpenAIService: ObservableObject {
     // MARK: - Security Notice
     // TODO: REPLACE WITH SECURE STORAGE - DO NOT COMMIT REAL API KEYS
     // This is a placeholder for development. In production, store securely in Keychain
-    private let apiKey = "YOUR_OPENAI_API_KEY_HERE" // Replace with actual API key
+    private let apiKey = " " // Replace with actual API key
     
     private let baseURL = "https://api.openai.com/v1/chat/completions"
     

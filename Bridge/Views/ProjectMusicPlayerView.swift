@@ -43,8 +43,9 @@ struct ProjectMusicPlayerView: View {
                     ZStack(alignment: .bottomLeading) {
                         Image(uiImage: art)
                             .resizable()
-                            .aspectRatio(1, contentMode: .fit)
-                            .frame(maxWidth: 200)
+                            .aspectRatio(1, contentMode: .fill) // Crop to square
+                            .frame(maxWidth: 200, maxHeight: 200)
+                            .clipped()
                             .clipShape(RoundedRectangle(cornerRadius: 16))
 
                         Text(project.title)

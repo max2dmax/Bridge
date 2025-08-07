@@ -17,7 +17,7 @@ struct SplashScreenView: View {
             )
             .ignoresSafeArea()
 
-            Text("Bridge Song Book")
+            Text("MusicRoom")
                 .font(.largeTitle)
                 .fontWeight(.bold)
                 .foregroundColor(.white)

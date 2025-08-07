@@ -444,7 +444,7 @@ struct ProjectDetailView: View {
         }
     }
     }
-}
+
 
 // MARK: - Archive Entry Row
 
